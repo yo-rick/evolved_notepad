@@ -14,7 +14,7 @@ import wx
 class MainFrame(wx.Frame):
 
     def __init__(self, parent, id, title):
-        super().__init__(parent, id, title)
+        super().__init__(parent, id, title, size=(800, 800))
         self.panelStack = []
 
     def showPanel(self, panel):
