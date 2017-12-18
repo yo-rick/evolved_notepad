@@ -18,3 +18,4 @@ class ManageFrame(wx.Frame):
         self.itemContainer = itemContainer
 
     # Create a panel which uses this itemContainer
+    # test
