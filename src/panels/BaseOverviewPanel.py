@@ -27,10 +27,16 @@ class BaseOverviewPanel(BasePanel):
         super().__init__(parent, id, title)
         self.itemContainer = itemContainer
         self.showBackButton = showBackButton
-        self.version_nr = wx.StaticText(self, -1, "Versie 1.2")
+
+        self.txt_title = self.textMaker("Categorieën", self.fnt_title)
+        self.txt_version = self.textMaker(self.version, self.fnt_default)
         self.vbox_overview = wx.BoxSizer(wx.VERTICAL)
-        self.btn_settings = wx.Button(self, -1, "Instellingen")
-        self.btn_edit = wx.Button(self, -1, "Beheren")
+        self.btn_settings = self.buttonMaker("Instellingen",
+                                self.instellingenKnop, self.fnt_default)
+        self.btn_edit = self.buttonMaker("Beheren", self.beherenKnop,
+                                self.fnt_default)
+        self.searchbar = wx.TextCtrl(self, -1, value="Zoeken in categorieën",
+                                size=(200, 50), name="zoekterm")
         self.generateTitleBox()
         self.generateScrollPanel()
         self.generateButtonBox()
@@ -40,9 +46,9 @@ class BaseOverviewPanel(BasePanel):
         self.vbox_overview.Add(wx.StaticText(self, -1, ""), .1, wx.LEFT)
         hbox_title = wx.BoxSizer(wx.HORIZONTAL)
         hbox_title.Add(wx.StaticText(self, -1, ""), 1, wx.EXPAND)
-        hbox_title.Add(wx.StaticText(self, -1, "Categorieen"), 1, wx.EXPAND)
+        hbox_title.Add(self.txt_title, 1, wx.EXPAND)
         hbox_title.Add(wx.StaticText(self, -1, ""), 8, wx.EXPAND)
-        hbox_title.Add(wx.StaticText(self, -1, "[Zoekfunctie]"), 1, wx.EXPAND)
+        hbox_title.Add(self.searchbar, 1, wx.TOP)
         hbox_title.Add(wx.StaticText(self, -1, ""), 1, wx.EXPAND)
         self.vbox_overview.Add(hbox_title, 1, wx.CENTRE | wx.ALL)
 
@@ -56,11 +62,19 @@ class BaseOverviewPanel(BasePanel):
         hbox_buttons.Add(wx.StaticText(self, -1, ""), 1, wx.CENTRE)
         hbox_buttons.Add(self.btn_settings, 5, wx.CENTRE)
         hbox_buttons.Add(wx.StaticText(self, -1, ""), 3, wx.EXPAND)
-        hbox_buttons.Add(self.version_nr, 1, wx.CENTRE | wx.BOTTOM)
+        hbox_buttons.Add(self.txt_version, 1, wx.CENTRE | wx.BOTTOM)
         hbox_buttons.Add(wx.StaticText(self, -1, ""), 3, wx.EXPAND)
         hbox_buttons.Add(self.btn_edit, 5, wx.CENTRE)
         hbox_buttons.Add(wx.StaticText(self, -1, ""), 1, wx.CENTRE)
         self.vbox_overview.Add(hbox_buttons, 1, wx.EXPAND | wx.ALL)
+
+    def instellingenKnop(self, event):
+        #naar instellingen scherm
+        self.btn_settings.SetLabel("Clicked")
+
+    def beherenKnop(self, event):
+        #naar beheren scherm
+        self.btn_edit.SetLabel("Clicked")
 
 if __name__ == "__main__":
     app = wx.App()
