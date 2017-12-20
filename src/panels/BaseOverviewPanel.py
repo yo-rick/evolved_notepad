@@ -30,39 +30,7 @@ class BaseOverviewPanel(BasePanel):
         super().__init__(parent, id, title)
         self.itemContainer = itemContainer
         self.showBackButton = showBackButton
-
-        pnl_scroll = scrolled.ScrolledPanel(self, -1, size=(780, 500),
-                                        pos=(10, 100), style=wx.SIMPLE_BORDER)
-        pnl_scroll.SetupScrolling()
-        pnl_scroll.SetBackgroundColour('#FFFFFF')
-
-        button1 = wx.Button(pnl_scroll, label="Categorie 1", pos=(0, 50),
-                            size=(750, 75))
-        button2 = wx.Button(pnl_scroll, label="Categorie 2", pos=(0, 100),
-                            size=(750, 75))
-        button3 = wx.Button(pnl_scroll, label="Categorie 3", pos=(0, 150),
-                            size=(750, 75))
-        button4 = wx.Button(pnl_scroll, label="Categorie 4", pos=(0, 200),
-                            size=(750, 75))
-        button5 = wx.Button(pnl_scroll, label="Categorie 5", pos=(0, 250),
-                            size=(750, 75))
-        button6 = wx.Button(pnl_scroll, label="Categorie 6", pos=(0, 300),
-                            size=(750, 75))
-        button7 = wx.Button(pnl_scroll, label="Categorie 7", pos=(0, 350),
-                            size=(750, 75))
-        button8 = wx.Button(pnl_scroll, label="Categorie 8", pos=(0, 400),
-                            size=(750, 75))
-
-        bSizer = wx.BoxSizer(wx.VERTICAL)
-        bSizer.Add(button1, 0, wx.ALL, 5)
-        bSizer.Add(button2, 0, wx.ALL, 5)
-        bSizer.Add(button3, 0, wx.ALL, 5)
-        bSizer.Add(button4, 0, wx.ALL, 5)
-        bSizer.Add(button5, 0, wx.ALL, 5)
-        bSizer.Add(button6, 0, wx.ALL, 5)
-        bSizer.Add(button7, 0, wx.ALL, 5)
-        bSizer.Add(button8, 0, wx.ALL, 5)
-        pnl_scroll.SetSizer(bSizer)
+        self.makeScrollPanel(itemContainer)
 
         self.txt_title = self.textMaker("Categorieën", self.fnt_title)
         self.txt_version = self.textMaker(self.version, self.fnt_default)
@@ -77,6 +45,20 @@ class BaseOverviewPanel(BasePanel):
         self.generateScrollPanel()
         self.generateButtonBox()
         self.SetSizer(self.vbox_overview)
+
+    def makeScrollPanel(self, itemContainer):
+        pnl_scroll = scrolled.ScrolledPanel(self, -1, size=(780, 500),
+                                            pos=(10, 100),
+                                            style=wx.SIMPLE_BORDER)
+        pnl_scroll.SetupScrolling()
+        pnl_scroll.SetBackgroundColour('#FFFFFF')
+        bSizer = wx.BoxSizer(wx.VERTICAL)
+        for x in range(len(itemContainer)):
+            button = wx.Button(pnl_scroll, label=itemContainer[x],
+                               pos=(0,50+50*x), size=(750, 75))
+            bSizer.Add(button, 0, wx.ALL, 5)
+        pnl_scroll.SetSizer(bSizer)
+
 
     def generateTitleBox(self):
         self.vbox_overview.Add(wx.StaticText(self, -1, ""), .1, wx.LEFT)
@@ -115,6 +97,9 @@ class BaseOverviewPanel(BasePanel):
 if __name__ == "__main__":
     app = wx.App()
     frame = MainFrame(None, -1, "Overzichtscherm")
-    paneeltje = BaseOverviewPanel(frame, -1, "Overzichtscherm",  [])
+    paneeltje = BaseOverviewPanel(frame, -1, "Overzichtscherm",
+                                  ["Categorie1", "Categorie2", "Categorie3",
+                                   "Categorie4", "Categorie5", "Categorie6"])
+    # uiteindelijk self.arr_container_items meegeven aan paneeltje
     frame.Show(True)
     app.MainLoop()
