@@ -54,9 +54,11 @@ class BaseOverviewPanel(BasePanel):
         pnl_scroll.SetBackgroundColour('#FFFFFF')
         bSizer = wx.BoxSizer(wx.VERTICAL)
         for x in range(len(itemContainer)):
-            button = wx.Button(pnl_scroll, label=itemContainer[x],
+            btn_item = wx.Button(pnl_scroll, label=itemContainer[x],
                                pos=(0,50+50*x), size=(750, 75))
-            bSizer.Add(button, 0, wx.ALL, 5)
+            btn_item.Bind(wx.EVT_BUTTON,
+                     lambda event, temp=x: self.itemKnop(event, temp))
+            bSizer.Add(btn_item, 0, wx.ALL, 5)
         pnl_scroll.SetSizer(bSizer)
 
 
@@ -93,6 +95,10 @@ class BaseOverviewPanel(BasePanel):
     def beherenKnop(self, event):
         #naar beheren scherm
         self.btn_edit.SetLabel("Clicked")
+
+    def itemKnop(self, event, id):
+        # naar item scherm (categorie/ notitie)
+        print(self.itemContainer[id])
 
 if __name__ == "__main__":
     app = wx.App()
