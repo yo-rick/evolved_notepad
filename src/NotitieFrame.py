@@ -2,6 +2,7 @@
 #-----------------------------------------
 #programmeur:   Datum:      Bewerking:
 #Joey Nap       19-12-2017  aangemaakt(vrijwel alles visueel klaar)
+#Joey Nap	21-12-2017  bestand inladen/opslaan; selectie bold maken.
 #-----------------------------------------
 
 import wx
@@ -11,17 +12,17 @@ class frm_notities(wx.Frame):
         wx.Frame.__init__(self, None, -1, 'Notitie scherm',   
                 size=(800, 800))  
         pnl_mainPanel = wx.Panel(self, -1)
-        
+
 #instellingen
-        str_noteNaam = "notitie 1"#notitienaam meekrijgen uit vorig scherm? gelijk aan filenaam?
-        str_noteInhoud = "tekst uit bestand"#mogelijk met self.invoerVeld.LoadFile(filename="")?
+        self.str_noteNaam = "TestNotitie"#notitienaam meekrijgen uit vorig scherm? gelijk aan filenaam?
+        str_noteInhoud = "Text laden mislukt."#mogelijk met self.invoerVeld.LoadFile(filename="")?
         int_fontSize = 12 #uit instellingenscherm
         
 #fonts
         fnt_titel = wx.Font(18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
                             wx.FONTWEIGHT_BOLD)
-        fnt_boldKnop = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
-                            wx.FONTWEIGHT_BOLD)
+        self.fnt_boldKnop = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
+                            wx.FONTWEIGHT_BOLD)#self is tijdelijk
         fnt_italicKnop = wx.Font(10, wx.FONTFAMILY_DEFAULT,
                                  wx.FONTSTYLE_ITALIC, wx.FONTWEIGHT_NORMAL)
         fnt_default = wx.Font(10, wx.FONTFAMILY_DEFAULT,
@@ -51,17 +52,18 @@ class frm_notities(wx.Frame):
                                  border=BxM_borderList[Pos])
             return box_newSizer
 #text
-        self.txt_titel = textMaker(str_noteNaam, fnt_titel)
+        self.txt_titel = textMaker(self.str_noteNaam, fnt_titel)
         self.txt_versie = textMaker("versie 0.0.1")
 #notitieveld
         self.notitieVeld = wx.TextCtrl(pnl_mainPanel, -1,
                                        value=str_noteInhoud,
                                        size=(800,600), style=wx.TE_MULTILINE,
                                        name="Note")
+        self.notitieVeld.LoadFile(filename=self.str_noteNaam)
 #buttons    
         self.btn_terug = buttonMaker("Terug", self.terugKnop)
         self.btn_opslaan = buttonMaker("Opslaan", self.opslaanKnop)
-        self.btn_bold = buttonMaker("Bold", self.boldKnop, fnt_boldKnop)
+        self.btn_bold = buttonMaker("Bold", self.boldKnop, self.fnt_boldKnop)
         self.btn_italic = buttonMaker("Italic", self.italicKnop,
                                       fnt_italicKnop)
         
@@ -83,10 +85,19 @@ class frm_notities(wx.Frame):
 
     def italicKnop(self, event):
         #komende tekst wordt italic tot volgende klik
+        #wx.TE_RICH bij textctrl met <i></i> en <b></b>?
+        #self.notitieVeld.SetDefaultStyle(wx.TextAttr(wx.NullColour, font=<font>))
         self.btn_italic.SetLabel("Clicked")
 
     def boldKnop(self, event):
-        #komende tekst wordt bold tot volgende klik 
+        #komende tekst wordt bold tot volgende klik, nu alleen selectie. OPSLAAN WERKT NIET
+        tpl_selectPos = self.notitieVeld.GetSelection()
+        if tpl_selectPos[0] != tpl_selectPos[1]:
+            str_selectie = self.notitieVeld.GetStringSelection()
+            self.notitieVeld.SetDefaultStyle(wx.TextAttr(wx.NullColour,font=
+                                                         self.fnt_boldKnop))
+            self.notitieVeld.Replace(tpl_selectPos[0], tpl_selectPos[1],
+                                     str_selectie)
         self.btn_bold.SetLabel("Clicked")
 
     def terugKnop(self, event):
@@ -96,7 +107,7 @@ class frm_notities(wx.Frame):
     def opslaanKnop(self, event):
         #zet tekst uit veld in notitie bestand
         self.btn_opslaan.SetLabel("Clicked")
-        #self.invoerveld.SaveFile(filename="")?
+        self.notitieVeld.SaveFile(filename=self.str_noteNaam)
 
 if __name__ == '__main__':  
     app = wx.App()  
