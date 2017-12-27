@@ -15,6 +15,9 @@ Log
 | Tjardo Maarseveen        | 22-12-2017 | Creating a working search bar    |
 |                          |            | with event                       |
 +--------------------------+------------+----------------------------------+
+| Tjardo Maarseveen        | 27-12-2017 | Making it possible to filter item|
+|                          |            | list with search bar             |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
@@ -26,15 +29,13 @@ class BaseOverviewPanel(BasePanel):
 
     #   TO DO :
     # Show the contents of the itemContainer
-    # Also show the default buttons
-    # version_nr -> later globaal
+    # Krijg GTK critical bij scrollen in gefilterde lijst (met zoekterm)
 
     def __init__(self, parent, id, title, itemContainer, showBackButton=False):
         super().__init__(parent, id, title)
         self.itemContainer = itemContainer
         self.showBackButton = showBackButton
         self.makeScrollPanel(itemContainer)
-
         self.txt_title = self.textMaker(title, self.fnt_title)
         self.txt_version = self.textMaker(self.version, self.fnt_default)
         self.vbox_overview = wx.BoxSizer(wx.VERTICAL)
@@ -59,15 +60,31 @@ class BaseOverviewPanel(BasePanel):
         self.generateItemList(itemContainer)
 
 
-    def generateItemList(self, itemContainer): # search filter meesturen
-        bSizer = wx.BoxSizer(wx.VERTICAL)
+    def generateItemList(self, itemContainer):
+        self.bSizer = wx.BoxSizer(wx.VERTICAL)
         for x in range(len(itemContainer)):
             btn_item = wx.Button(self.pnl_scroll, label=itemContainer[x],
                                  pos=(0, 50 + 50 * x), size=(750, 75))
             btn_item.Bind(wx.EVT_BUTTON,
                           lambda event, temp=x: self.itemKnop(event, temp))
-            bSizer.Add(btn_item, 0, wx.ALL, 5)
-        self.pnl_scroll.SetSizer(bSizer)
+            self.bSizer.Add(btn_item, 0, wx.ALL, 5)
+        self.pnl_scroll.SetSizer(self.bSizer)
+        self.pnl_scroll.Layout()
+
+    def updateItemList(self, search_term):
+        children = self.pnl_scroll.GetChildren()
+        teller = 0
+        for child in children:
+            if (search_term.lower() ==
+                    child.GetLabel()[:len(search_term)].lower()):
+                child.SetPosition((0, 50 + 50 * teller))
+                self.bSizer.Show(child)
+            else :
+                self.bSizer.Hide(child)
+            teller += 1
+        self.pnl_scroll.SetSizer(self.bSizer)
+        self.pnl_scroll.Layout()
+
 
     def generateTitleBox(self):
         self.vbox_overview.Add(wx.StaticText(self, -1, ""), .1, wx.LEFT)
@@ -108,7 +125,7 @@ class BaseOverviewPanel(BasePanel):
         print(self.itemContainer[id])
 
     def onUpdateField(self, event):
-        print(self.searchbar.GetValue())
+        self.updateItemList(self.searchbar.GetValue())
         event.Skip()
 
 if __name__ == "__main__":
@@ -116,7 +133,8 @@ if __name__ == "__main__":
     frame = MainFrame(None, -1, "Overzichtscherm")
     paneeltje = BaseOverviewPanel(frame, -1, "Categorieën",
                                   ["Categorie1", "Categorie2", "Categorie3",
-                                   "Categorie4", "Categorie5", "Categorie6"])
+                                   "Categorie4", "Categorie5", "Groep6",
+                                   "Groep7"])
     # uiteindelijk self.arr_container_items meegeven aan paneeltje
     frame.Show(True)
     app.MainLoop()
