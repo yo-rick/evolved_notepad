@@ -17,10 +17,10 @@ import wx
 
 class BasePanel(wx.Panel):
 
-    def __init__(self, parent, id, title):
-        super().__init__(parent, id)
-        self.title = title
-        self.version = "Versie 1.2"
+    def __init__(self, parent, id, frame_title, panel_title):
+        super().__init__(parent=parent, id=id)
+        self.frame_title = frame_title
+        self.panel_title = panel_title
         # fonts
         self.fnt_title = wx.Font(18, wx.FONTFAMILY_DEFAULT,
                                  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
@@ -32,15 +32,17 @@ class BasePanel(wx.Panel):
         txt_staticText.SetFont(TM_font)
         return txt_staticText
 
-    def buttonMaker(self, BM_btnLabel, BM_evtNaam,
-                        BM_lblFont):
+    def buttonMaker(self, BM_btnLabel, BM_evtNaam, BM_lblFont):
         btn_button = wx.Button(self, -1, BM_btnLabel)
         self.Bind(wx.EVT_BUTTON, BM_evtNaam, btn_button)
         btn_button.SetFont(BM_lblFont)
         btn_button.SetDefault()
         return btn_button
 
-    def getTitle(self):
-        return self.title
+    def getFrameTitle(self):
+        return self.frame_title
+
+    def getPanelTitle(self):
+        return self.panel_title
 
 

@@ -6,14 +6,17 @@ Log
 | Wesley Ameling           | 17-12-2017 | Create this file, setting up the |
 |                          |            | skeleton of this application     |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 29-12-2017 | Add default path setting         |
++--------------------------+------------+----------------------------------+
 
 """
 import json
 import os
 
+from pathlib import Path
 
 DEFAULT_SETTINGS = {
-
+    'path': os.path.join(str(Path.home()), 'EvolvedNotepad')
 }
 
 SETTINGS_FILE_PATH = os.path.join(os.path.dirname(__file__), '.settings.json')

@@ -18,123 +18,129 @@ Log
 | Tjardo Maarseveen        | 27-12-2017 | Making it possible to filter item|
 |                          |            | list with search bar             |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 29-12-2017 | Move starting of the panel to the|
+|                          |            | MainFrame and make use of the    |
+|                          |            | ItemContainer class. Also        |
+|                          |            | improved the GUI to be more      |
+|                          |            | flexible. Added back button.     |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
 import wx.lib.scrolledpanel as scrolled
-from MainFrame import MainFrame
+
+import MainFrame
 from panels.BasePanel import BasePanel
+
+
+SETTINGS = "Instellingen"
+MANAGE = "Beheren"
+SEARCH_TEXT = "Zoeken in "
+CATEGORIES = "categorieën"
+BACK = "Terug"
+
 
 class BaseOverviewPanel(BasePanel):
 
-    #   TO DO :
-    # Show the contents of the itemContainer
-    # Krijg GTK critical bij scrollen in gefilterde lijst (met zoekterm)
-
-    def __init__(self, parent, id, title, itemContainer, showBackButton=False):
-        super().__init__(parent, id, title)
-        self.itemContainer = itemContainer
-        self.showBackButton = showBackButton
-        self.makeScrollPanel(itemContainer)
-        self.txt_title = self.textMaker(title, self.fnt_title)
-        self.txt_version = self.textMaker(self.version, self.fnt_default)
+    def __init__(self, parent, id, frame_title, panel_title, item_container,
+                 show_back_button=False):
+        super().__init__(parent, id, frame_title, panel_title)
+        self.item_container = item_container
+        self.show_back_button = show_back_button
+        # Layout
+        self.pnl_scroll = scrolled.ScrolledPanel(
+            self, wx.ID_ANY, style=wx.SIMPLE_BORDER)
+        self.txt_title = self.textMaker(panel_title, self.fnt_title)
         self.vbox_overview = wx.BoxSizer(wx.VERTICAL)
-        self.btn_settings = self.buttonMaker("Instellingen",
-                                self.instellingenKnop, self.fnt_default)
-        self.btn_edit = self.buttonMaker("Beheren", self.beherenKnop,
-                                self.fnt_default)
-        self.searchbar = wx.TextCtrl(self, -1, value="Zoeken in categorieën",
-                                size=(200, 50), name="zoekterm")
+        search_bar_text = SEARCH_TEXT + (
+            panel_title if show_back_button else CATEGORIES)
+        self.searchbar = wx.TextCtrl(
+            self, wx.ID_ANY, value=search_bar_text, size=(200, 50))
         self.searchbar.Bind(wx.EVT_KEY_UP, self.onUpdateField)
         self.generateTitleBox()
-        self.generateScrollPanel()
+        self.setupScrollPanel()
         self.generateButtonBox()
         self.SetSizer(self.vbox_overview)
 
-    def makeScrollPanel(self, itemContainer):
-        self.pnl_scroll = scrolled.ScrolledPanel(self, -1, size=(780, 500),
-                                            pos=(10, 100),
-                                            style=wx.SIMPLE_BORDER)
-        self.pnl_scroll.SetupScrolling()
-        self.pnl_scroll.SetBackgroundColour('#FFFFFF')
-        self.generateItemList(itemContainer)
-
-
-    def generateItemList(self, itemContainer):
-        self.bSizer = wx.BoxSizer(wx.VERTICAL)
-        for x in range(len(itemContainer)):
-            btn_item = wx.Button(self.pnl_scroll, label=itemContainer[x],
-                                 pos=(0, 50 + 50 * x), size=(750, 75))
-            btn_item.Bind(wx.EVT_BUTTON,
-                          lambda event, temp=x: self.itemKnop(event, temp))
-            self.bSizer.Add(btn_item, 0, wx.ALL, 5)
-        self.pnl_scroll.SetSizer(self.bSizer)
-        self.pnl_scroll.Layout()
-
     def updateItemList(self, search_term):
         children = self.pnl_scroll.GetChildren()
-        teller = 0
-        for child in children:
-            if (search_term.lower() ==
-                    child.GetLabel()[:len(search_term)].lower()):
-                child.SetPosition((0, 50 + 50 * teller))
+        for idx in range(len(children)):
+            child = children[idx]
+            if search_term in child.GetLabel():
+                child.SetPosition((0, 50 + 50 * idx))
                 self.bSizer.Show(child)
-            else :
+            else:
                 self.bSizer.Hide(child)
-            teller += 1
         self.pnl_scroll.SetSizer(self.bSizer)
         self.pnl_scroll.Layout()
 
-
     def generateTitleBox(self):
-        self.vbox_overview.Add(wx.StaticText(self, -1, ""), .1, wx.LEFT)
+        self.vbox_overview.Add(wx.StaticText(self, wx.ID_ANY, ""), .1, wx.LEFT)
         hbox_title = wx.BoxSizer(wx.HORIZONTAL)
-        hbox_title.Add(wx.StaticText(self, -1, ""), 1, wx.EXPAND)
+        hbox_title.Add(wx.StaticText(self, wx.ID_ANY, ""), 1, wx.EXPAND)
         hbox_title.Add(self.txt_title, 1, wx.EXPAND)
-        hbox_title.Add(wx.StaticText(self, -1, ""), 8, wx.EXPAND)
+        hbox_title.Add(wx.StaticText(self, wx.ID_ANY, ""), 8, wx.EXPAND)
         hbox_title.Add(self.searchbar, 1, wx.TOP)
-        hbox_title.Add(wx.StaticText(self, -1, ""), 1, wx.EXPAND)
+        hbox_title.Add(wx.StaticText(self, wx.ID_ANY, ""), 1, wx.EXPAND)
         self.vbox_overview.Add(hbox_title, 1, wx.CENTRE | wx.ALL)
 
-    def generateScrollPanel(self):
-        self.vbox_overview.Add(wx.StaticText(self, -1, ""), .1, wx.LEFT)
-        self.vbox_overview.Add(wx.StaticText(self, -1, ""), 4,
-                               wx.CENTRE)
+    def setupScrollPanel(self):
+        self.pnl_scroll.SetupScrolling()
+        self.pnl_scroll.SetBackgroundColour((255, 255, 255))
+        self.bSizer = wx.BoxSizer(wx.VERTICAL)
+        items = self.item_container.getItems()
+        for idx in range(len(items)):
+            btn_item = wx.Button(self.pnl_scroll, label=items[idx],
+                                 pos=(0, 50 + 50 * idx), size=(0, 40))
+            btn_item.Bind(wx.EVT_BUTTON,
+                          lambda event, idx=idx: self.itemButton(event, idx))
+            self.bSizer.Add(btn_item, 0, wx.EXPAND | wx.ALL, 5)
+        self.pnl_scroll.SetSizer(self.bSizer)
+        self.pnl_scroll.Layout()
+        flags = wx.EXPAND | wx.LEFT | wx.RIGHT
+        self.vbox_overview.Add(self.pnl_scroll, 7, flags, 10)
 
     def generateButtonBox(self):
+        txt_version = self.textMaker(
+            MainFrame.VERSION_STRING, self.fnt_default)
+        btn_settings = self.buttonMaker(
+            SETTINGS, self.settingsButton, self.fnt_default)
         hbox_buttons = wx.BoxSizer(wx.HORIZONTAL)
-        hbox_buttons.Add(wx.StaticText(self, -1, ""), 1, wx.CENTRE)
-        hbox_buttons.Add(self.btn_settings, 5, wx.CENTRE)
-        hbox_buttons.Add(wx.StaticText(self, -1, ""), 3, wx.EXPAND)
-        hbox_buttons.Add(self.txt_version, 1, wx.CENTRE | wx.BOTTOM)
-        hbox_buttons.Add(wx.StaticText(self, -1, ""), 3, wx.EXPAND)
-        hbox_buttons.Add(self.btn_edit, 5, wx.CENTRE)
-        hbox_buttons.Add(wx.StaticText(self, -1, ""), 1, wx.CENTRE)
+        hbox_buttons.Add(wx.StaticText(self, wx.ID_ANY, ""), 1, wx.CENTRE)
+        hbox_buttons.Add(btn_settings, 5, wx.CENTRE)
+        hbox_buttons.Add(wx.StaticText(self, wx.ID_ANY, ""), 3, wx.EXPAND)
+        hbox_buttons.Add(txt_version, 1, wx.CENTRE | wx.BOTTOM)
+        hbox_buttons.Add(wx.StaticText(self, wx.ID_ANY, ""), 3, wx.EXPAND)
+        hbox_buttons.Add(self.generateManageButton(), 5, wx.CENTRE)
+        hbox_buttons.Add(wx.StaticText(self, wx.ID_ANY, ""), 1, wx.CENTRE)
         self.vbox_overview.Add(hbox_buttons, 1, wx.EXPAND | wx.ALL)
 
-    def instellingenKnop(self, event):
+    def generateManageButton(self):
+        vbox_manage = wx.BoxSizer(wx.VERTICAL)
+        btn_manage = self.buttonMaker(
+            MANAGE, self.manageButton, self.fnt_default)
+        vbox_manage.Add(btn_manage, 1, wx.EXPAND)
+        if self.show_back_button:
+            btn_back = self.buttonMaker(
+                BACK, self.backButton, self.fnt_default)
+            vbox_manage.Add(btn_back, 1, wx.EXPAND)
+        return vbox_manage
+
+
+    def settingsButton(self, event):
         #naar instellingen scherm
-        self.btn_settings.SetLabel("Clicked")
+        print(SETTINGS)
 
-    def beherenKnop(self, event):
+    def manageButton(self, event):
         #naar beheren scherm
-        self.btn_edit.SetLabel("Clicked")
+        print(MANAGE)
 
-    def itemKnop(self, event, id):
-        # naar item scherm (categorie/ notitie)
-        print(self.itemContainer[id])
+    def backButton(self, event):
+        self.GetParent().goBack()
+
+    def itemButton(self, event, id):
+        self.item_container.clickItem(id)
 
     def onUpdateField(self, event):
         self.updateItemList(self.searchbar.GetValue())
         event.Skip()
-
-if __name__ == "__main__":
-    app = wx.App()
-    frame = MainFrame(None, -1, "Overzichtscherm")
-    paneeltje = BaseOverviewPanel(frame, -1, "Categorieën",
-                                  ["Categorie1", "Categorie2", "Categorie3",
-                                   "Categorie4", "Categorie5", "Groep6",
-                                   "Groep7"])
-    # uiteindelijk self.arr_container_items meegeven aan paneeltje
-    frame.Show(True)
-    app.MainLoop()
