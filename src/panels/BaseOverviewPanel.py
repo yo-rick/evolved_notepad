@@ -18,11 +18,11 @@ Log
 | Tjardo Maarseveen        | 27-12-2017 | Making it possible to filter item|
 |                          |            | list with search bar             |
 +--------------------------+------------+----------------------------------+
-| Wesley Ameling           | 29-12-2017 | Move starting of the panel to the|
-|                          |            | MainFrame and make use of the    |
-|                          |            | ItemContainer class. Also        |
-|                          |            | improved the GUI to be more      |
-|                          |            | flexible. Added back button.     |
+| Wesley Ameling           | 29-12-2017 | Moved starting to the MainFrame, |
+|                          |            | implement ItemContainer usage,   |
+|                          |            | improved the GUI for flexibility,|
+|                          |            | added the back button and added  |
+|                          |            | action for the settings button.  |
 +--------------------------+------------+----------------------------------+
 
 """
@@ -30,6 +30,7 @@ import wx
 import wx.lib.scrolledpanel as scrolled
 
 import MainFrame
+from SettingsFrame import SettingsFrame
 from panels.BasePanel import BasePanel
 
 
@@ -128,8 +129,7 @@ class BaseOverviewPanel(BasePanel):
 
 
     def settingsButton(self, event):
-        #naar instellingen scherm
-        print(SETTINGS)
+        SettingsFrame(self.GetParent(), wx.ID_ANY)
 
     def manageButton(self, event):
         #naar beheren scherm

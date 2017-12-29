@@ -12,3 +12,4 @@ from .BasePanel import BasePanel
 from .BaseOverviewPanel import BaseOverviewPanel
 from .CategoryOverviewPanel import CategoryOverviewPanel
 from .NoteOverviewPanel import NoteOverviewPanel
+from .SettingsPanel import SettingsPanel
