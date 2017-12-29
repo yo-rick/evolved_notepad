@@ -43,7 +43,7 @@ class CategoryItemContainer(ItemContainer):
         super().deleteItem(index)
 
     def fillContainer(self):
-        pass
+        self.arr_container_items.append('Beheren doet het nog niet :S')
 
     def setMainFrame(self, frame):
         self.main_frame = frame
