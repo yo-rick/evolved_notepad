@@ -24,6 +24,8 @@ Log
 |                          |            | added the back button and added  |
 |                          |            | action for the settings button.  |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 03-01-2018 | Remove unnecessary Layout        |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
@@ -50,7 +52,7 @@ class BaseOverviewPanel(BasePanel):
         self.show_back_button = show_back_button
         # Layout
         self.pnl_scroll = scrolled.ScrolledPanel(
-            self, wx.ID_ANY, style=wx.SIMPLE_BORDER)
+            self, wx.ID_ANY, style=wx.SUNKEN_BORDER)
         self.txt_title = self.textMaker(panel_title, self.fnt_title)
         self.vbox_overview = wx.BoxSizer(wx.VERTICAL)
         search_bar_text = SEARCH_TEXT + (
@@ -97,7 +99,6 @@ class BaseOverviewPanel(BasePanel):
                           lambda event, idx=idx: self.itemButton(event, idx))
             self.bSizer.Add(btn_item, 0, wx.EXPAND | wx.ALL, 5)
         self.pnl_scroll.SetSizer(self.bSizer)
-        self.pnl_scroll.Layout()
         flags = wx.EXPAND | wx.LEFT | wx.RIGHT
         self.vbox_overview.Add(self.pnl_scroll, 7, flags, 10)
 

@@ -9,6 +9,8 @@ Log
 |                          |            | into English and made the GUI more|
 |                          |            | flexible.                         |
 +--------------------------+------------+-----------------------------------+
+| Wesley Ameling           | 03-01-2018 | Removed panel size                |
++--------------------------+------------+-----------------------------------+
 
 """
 
@@ -33,7 +35,7 @@ SAVE = "Opslaan"
 class SettingsPanel(wx.Panel):
 
     def __init__(self, parent, id):
-        super().__init__(parent, id, size=(600, 400))
+        super().__init__(parent, id)
         self.settings = Settings.getInstance()
         self.IP_vbox = wx.BoxSizer(wx.VERTICAL)
         self.IP_vbox.Add(self.createTitle(id))

@@ -10,7 +10,9 @@ Log
 |                          |            | buttonMaker methods to the       |
 |                          |            | Basepanel                        |
 +--------------------------+------------+----------------------------------+
-
+| Wesley Ameling           | 03-01-2018 | Replaced -1 with proper ID's,    |
+|                          |            | added default fonts              |
++--------------------------+------------+----------------------------------+
 """
 import wx
 
@@ -27,13 +29,18 @@ class BasePanel(wx.Panel):
         self.fnt_default = wx.Font(10, wx.FONTFAMILY_DEFAULT,
                                    wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
 
-    def textMaker(self, TM_textLabel, TM_font):
-        txt_staticText = wx.StaticText(self, -1, TM_textLabel)
+    def textMaker(self, TM_textLabel, TM_font=None, style=0):
+        if TM_font is None:
+            TM_font = self.fnt_default
+        txt_staticText = wx.StaticText(
+            self, wx.ID_ANY, TM_textLabel, style=style)
         txt_staticText.SetFont(TM_font)
         return txt_staticText
 
-    def buttonMaker(self, BM_btnLabel, BM_evtNaam, BM_lblFont):
-        btn_button = wx.Button(self, -1, BM_btnLabel)
+    def buttonMaker(self, BM_btnLabel, BM_evtNaam, BM_lblFont=None):
+        if BM_lblFont is None:
+            BM_lblFont = self.fnt_default
+        btn_button = wx.Button(self, wx.ID_ANY, BM_btnLabel)
         self.Bind(wx.EVT_BUTTON, BM_evtNaam, btn_button)
         btn_button.SetFont(BM_lblFont)
         btn_button.SetDefault()
