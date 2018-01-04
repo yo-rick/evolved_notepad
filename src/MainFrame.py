@@ -11,6 +11,8 @@ Log
 |                          |            | from the command line. Also added|
 |                          |            | a global version string.         |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 04-01-2018 | Center window in screen          |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
@@ -24,6 +26,7 @@ class MainFrame(wx.Frame):
 
     def __init__(self, parent, id, title):
         super().__init__(parent, id, title, size=(800, 800))
+        self.Center()
         self.container_box = wx.BoxSizer(wx.VERTICAL)
         self.panel_stack = []
         self.SetSizer(self.container_box)

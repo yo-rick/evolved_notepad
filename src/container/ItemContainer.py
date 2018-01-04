@@ -11,6 +11,9 @@ Log
 |                          |            | Now uses an index on clickItem   |
 |                          |            | and deleteItem with a check      |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 04-01-2018 | Tweaked the size of the frame and|
+|                          |            | added a hasItem method.          |
++--------------------------+------------+----------------------------------+
 """
 
 
@@ -39,3 +42,6 @@ class ItemContainer(object):
 
     def fillContainer(self):
         raise NotImplementedError
+
+    def hasItem(self, item):
+        return item in self.arr_container_items

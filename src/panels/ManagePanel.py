@@ -1,6 +1,6 @@
 """
 +--------------------------+------------+----------------------------------+
-| Wesley Ameling           | 04-01-2018 | Initial creation, basic version  |
+| Wesley Ameling           | 04-01-2018 | Initial creation                 |
 +--------------------------+------------+----------------------------------+
 
 """
@@ -9,24 +9,39 @@ import wx
 import wx.lib.scrolledpanel as scrolled
 
 import MainFrame
-from panels import BasePanel
+from .BasePanel import BasePanel
+from .BaseOverviewPanel import BaseOverviewPanel
 
 
 MANAGE = "beheren"
 DELETE = "Verwijderen"
 ADD = "Toevoegen"
 BACK = "Terug"
+NAME = "naam"
+NAME_TOO_SHORT = "De {}naam moet minimaal 3 en maximaal 35 tekens bevatten."
+DUPLICATE_NAME = "Deze {} bestaat al"
 PADDING_FLAG = wx.ALL - wx.TOP
 
 
 class ManagePanel(BasePanel):
 
-    def __init__(self, parent, id, title, item_container):
-        title += " " + MANAGE
+    def __init__(self, parent, id, item_container, singular, multiple):
+        title = "{} {}".format(multiple, MANAGE)
         super().__init__(parent, id, title, title)
+        self.text_singular = singular
+        self.text_multiple = multiple
         self.item_container = item_container
+        self.marked_items = []
+        # Widgets
+        self.input_ctrl = wx.TextCtrl(
+            self, style=wx.HSCROLL | wx.TE_PROCESS_ENTER)
+        self.input_ctrl.SetMaxLength(35)
+        self.scroll_panel = scrolled.ScrolledPanel(
+            self, wx.ID_ANY, style=wx.SUNKEN_BORDER)
+        self.scroll_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.delete_button = self.buttonMaker(DELETE, self.deleteSelection)
+        # Draw screen
         self.box_container = wx.BoxSizer(wx.VERTICAL)
-        self.input_ctrl = wx.TextCtrl(self, style=wx.HSCROLL)
         self.fillBoxContainer()
         self.SetSizer(self.box_container)
 
@@ -34,31 +49,30 @@ class ManagePanel(BasePanel):
         title_text = self.textMaker(self.getPanelTitle(), self.fnt_title)
         self.box_container.Add(title_text, 1, wx.EXPAND | PADDING_FLAG, 10)
         self.createScrollPanel()
-        delete_button = self.buttonMaker(DELETE, self.deleteSelection)
-        self.box_container.Add(delete_button, 1, wx.EXPAND | PADDING_FLAG, 10)
+        self.delete_button.Enable(bool(len(self.item_container.getItems())))
+        self.box_container.Add(
+            self.delete_button, 1, wx.EXPAND | PADDING_FLAG, 10)
         self.createNewItemSizer()
         add_button = self.buttonMaker(ADD, self.addInput)
         self.box_container.Add(add_button, 1, wx.EXPAND | PADDING_FLAG, 10)
         self.createVersionAndBack()
 
     def createScrollPanel(self):
-        scroll_panel = scrolled.ScrolledPanel(
-            self, wx.ID_ANY, style=wx.SUNKEN_BORDER)
-        scroll_panel.SetAutoLayout(1)
-        scroll_panel.SetupScrolling()
-        scroll_panel.SetBackgroundColour((255, 255, 255))
-        scroll_panel_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.scroll_panel.SetAutoLayout(1)
+        self.scroll_panel.SetupScrolling()
+        self.scroll_panel.SetBackgroundColour((255, 255, 255))
         items = self.item_container.getItems()
         for idx in range(len(items)):
-            scroll_panel_sizer.Add(
-                self.createSizerForItem(scroll_panel, items[idx]),
+            self.scroll_sizer.Add(
+                self.createSizerForItem(idx, items[idx]),
                 0, wx.EXPAND)
-        scroll_panel.SetSizer(scroll_panel_sizer)
-        self.box_container.Add(scroll_panel, 5, wx.EXPAND | PADDING_FLAG, 10)
+        self.scroll_panel.SetSizer(self.scroll_sizer)
+        self.box_container.Add(
+            self.scroll_panel, 5, wx.EXPAND | PADDING_FLAG, 10)
 
-    def createSizerForItem(self, scroll_panel, item):
-        checkbox = wx.CheckBox(scroll_panel)
-        label = wx.TextCtrl(scroll_panel, style=wx.TE_READONLY)
+    def createSizerForItem(self, idx, item):
+        checkbox = wx.CheckBox(self.scroll_panel)
+        label = wx.TextCtrl(self.scroll_panel, style=wx.TE_READONLY)
         label.Enable(False)
         label.SetForegroundColour((0, 0, 0))
         label.SetBackgroundColour((255, 255, 255))
@@ -72,7 +86,7 @@ class ManagePanel(BasePanel):
         return simple_sizer
 
     def createNewItemSizer(self):
-        lbl = self.textMaker("[TODO]", )
+        lbl = self.textMaker("{}{}".format(self.text_singular, NAME))
         vertical_wrapper = wx.BoxSizer(wx.HORIZONTAL)
         vertical_wrapper.Add(lbl, 1, wx.ALIGN_CENTER)
         wrapper = wx.BoxSizer(wx.HORIZONTAL)
@@ -93,14 +107,44 @@ class ManagePanel(BasePanel):
         horizontal.Add(back_button, 1, wx.EXPAND)
         self.box_container.Add(horizontal, 1, wx.EXPAND | PADDING_FLAG, 10)
 
+    def refreshList(self):
+        self.scroll_sizer.Layout()
+        self.scroll_panel.Layout()
+        self.scroll_panel.SetupScrolling(scrollToTop=False)
+        self.delete_button.Enable(
+            bool(len(self.item_container.getItems())))
+        stack = self.GetParent().GetParent().panel_stack
+        if stack and isinstance(stack[-1], BaseOverviewPanel):
+            stack[-1].refreshItemList()
+
     def addInput(self, evt):
-        raise NotImplementedError
+        text = self.input_ctrl.GetValue()
+        if len(text) < 3:
+            text = NAME_TOO_SHORT.format(self.text_singular.lower())
+            wx.MessageDialog(self, text).ShowModal()
+        elif self.item_container.hasItem(text):
+            text = DUPLICATE_NAME.format(self.text_singular.lower())
+            wx.MessageDialog(self, text).ShowModal()
+        else:
+            self.item_container.createItem(text)
+            item_sizer = self.createSizerForItem(
+                len(self.item_container.getItems()), text)
+            self.scroll_sizer.Add(item_sizer, 0, wx.EXPAND)
+            self.refreshList()
 
     def deleteSelection(self, evt):
-        raise NotImplementedError
+        self.marked_items.sort()
+        for idx in self.marked_items[::-1]:
+            self.item_container.deleteItem(idx)
+            self.scroll_sizer.GetItem(idx).DeleteWindows()
+        self.marked_items.clear()
+        self.refreshList()
 
-    def updateCheckbox(self, evt, txt):
+    def updateCheckbox(self, evt, lbl):
+        idx = self.item_container.getItems().index(lbl.GetValue())
         if evt.GetEventObject().GetValue() is True:
-            txt.SetBackgroundColour((255, 255, 0))
+            lbl.SetBackgroundColour((255, 255, 0))
+            self.marked_items.append(idx)
         else:
-            txt.SetBackgroundColour((255, 255, 255))
+            lbl.SetBackgroundColour((255, 255, 255))
+            self.marked_items.remove(idx)

@@ -26,15 +26,17 @@ Log
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 03-01-2018 | Remove unnecessary Layout        |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 04-01-2018 | Implement scroll panel updating  |
+|                          |            | and the ManageDialog link        |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
 import wx.lib.scrolledpanel as scrolled
 
 import MainFrame
-from SettingsFrame import SettingsFrame
-from panels.BasePanel import BasePanel
-
+from SettingsDialog import SettingsDialog
+from .BasePanel import BasePanel
 
 SETTINGS = "Instellingen"
 MANAGE = "Beheren"
@@ -55,27 +57,43 @@ class BaseOverviewPanel(BasePanel):
             self, wx.ID_ANY, style=wx.SUNKEN_BORDER)
         self.txt_title = self.textMaker(panel_title, self.fnt_title)
         self.vbox_overview = wx.BoxSizer(wx.VERTICAL)
-        search_bar_text = SEARCH_TEXT + (
-            panel_title if show_back_button else CATEGORIES)
         self.searchbar = wx.TextCtrl(
-            self, wx.ID_ANY, value=search_bar_text, size=(200, 50))
+            self, wx.ID_ANY, size=(200, 50))
+        self.searchbar.SetHint(SEARCH_TEXT + (
+            panel_title if show_back_button else CATEGORIES))
+        self.bSizer = wx.BoxSizer(wx.VERTICAL)
         self.searchbar.Bind(wx.EVT_KEY_UP, self.onUpdateField)
         self.generateTitleBox()
         self.setupScrollPanel()
         self.generateButtonBox()
+        self.refreshItemList()
         self.SetSizer(self.vbox_overview)
 
-    def updateItemList(self, search_term):
-        children = self.pnl_scroll.GetChildren()
-        for idx in range(len(children)):
-            child = children[idx]
-            if search_term in child.GetLabel():
-                child.SetPosition((0, 50 + 50 * idx))
-                self.bSizer.Show(child)
-            else:
-                self.bSizer.Hide(child)
-        self.pnl_scroll.SetSizer(self.bSizer)
+    def refreshItemList(self):
+        for child in self.bSizer.GetChildren():
+            child.DeleteWindows()
+        items = self.item_container.getItems()
+        for idx in range(len(items)):
+            btn_item = wx.Button(self.pnl_scroll, label=items[idx],
+                                 pos=(0, 50 + 50 * idx), size=(0, 40))
+            btn_item.Bind(wx.EVT_BUTTON,
+                          lambda event, idx=idx: self.itemButton(event, idx))
+            self.bSizer.Add(btn_item, 0, wx.EXPAND | wx.ALL, 5)
+        self.bSizer.Layout()
+        self.searchItemList(self.searchbar.GetValue())
+
+    def searchItemList(self, search_term):
+        if search_term:
+            children = self.pnl_scroll.GetChildren()
+            for idx in range(len(children)):
+                child = children[idx]
+                if search_term in child.GetLabel():
+                    child.SetPosition((0, 50 + 50 * idx))
+                    self.bSizer.Show(child)
+                else:
+                    self.bSizer.Hide(child)
         self.pnl_scroll.Layout()
+        self.pnl_scroll.SetupScrolling(scrollToTop=False)
 
     def generateTitleBox(self):
         self.vbox_overview.Add(wx.StaticText(self, wx.ID_ANY, ""), .1, wx.LEFT)
@@ -90,14 +108,6 @@ class BaseOverviewPanel(BasePanel):
     def setupScrollPanel(self):
         self.pnl_scroll.SetupScrolling()
         self.pnl_scroll.SetBackgroundColour((255, 255, 255))
-        self.bSizer = wx.BoxSizer(wx.VERTICAL)
-        items = self.item_container.getItems()
-        for idx in range(len(items)):
-            btn_item = wx.Button(self.pnl_scroll, label=items[idx],
-                                 pos=(0, 50 + 50 * idx), size=(0, 40))
-            btn_item.Bind(wx.EVT_BUTTON,
-                          lambda event, idx=idx: self.itemButton(event, idx))
-            self.bSizer.Add(btn_item, 0, wx.EXPAND | wx.ALL, 5)
         self.pnl_scroll.SetSizer(self.bSizer)
         flags = wx.EXPAND | wx.LEFT | wx.RIGHT
         self.vbox_overview.Add(self.pnl_scroll, 7, flags, 10)
@@ -128,13 +138,11 @@ class BaseOverviewPanel(BasePanel):
             vbox_manage.Add(btn_back, 1, wx.EXPAND)
         return vbox_manage
 
-
     def settingsButton(self, event):
-        SettingsFrame(self.GetParent(), wx.ID_ANY)
+        SettingsDialog(self.GetParent(), wx.ID_ANY)
 
     def manageButton(self, event):
-        #naar beheren scherm
-        print(MANAGE)
+        self.refreshItemList()
 
     def backButton(self, event):
         self.GetParent().goBack()
@@ -143,5 +151,5 @@ class BaseOverviewPanel(BasePanel):
         self.item_container.clickItem(id)
 
     def onUpdateField(self, event):
-        self.updateItemList(self.searchbar.GetValue())
+        self.searchItemList(self.searchbar.GetValue())
         event.Skip()

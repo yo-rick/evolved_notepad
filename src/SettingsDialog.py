@@ -13,6 +13,9 @@ Log
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 03-01-2018 | Tweaked the size of the frame    |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 04-01-2018 | Change to a dialog instead of a  |
+|                          |            | panel                            |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
@@ -20,9 +23,9 @@ import wx
 import panels
 
 
-class SettingsFrame(wx.Frame):
+class SettingsDialog(wx.Dialog):
 
     def __init__(self, parent, id):
         super().__init__(parent, id, "Instellingen", size=(450, 420))
         self.panel = panels.SettingsPanel(self, id)
-        self.Show(True)
+        self.ShowModal()

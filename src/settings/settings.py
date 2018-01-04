@@ -8,6 +8,8 @@ Log
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 29-12-2017 | Add default settings             |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 04-01-2018 | Added default items setting      |
++--------------------------+------------+----------------------------------+
 
 """
 import json
@@ -20,7 +22,8 @@ DEFAULT_SETTINGS = {
     'prefix': '',
     'font-family': '?',
     'font-size': 10,
-    'tab-length': 4
+    'tab-length': 4,
+    'items': dict()
 }
 
 SETTINGS_FILE_PATH = os.path.join(os.path.dirname(__file__), '.settings.json')
