@@ -11,6 +11,8 @@ Log
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 04-01-2018 | Re-implemented this whole class  |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 05-01-2018 | Reflect name changes in base clss|
++--------------------------+------------+----------------------------------+
 
 """
 import os
@@ -30,15 +32,13 @@ class CategoryItemContainer(ItemContainer):
     def __init__(self, categoryFolder):
         self.folder = categoryFolder
         self.settings = Settings.getInstance()
-        self.main_frame = None
-        self.dirs = []
         super().__init__()
 
     def clickItem(self, index):
         super().clickItem(index)
         item = self.arr_container_items[index]
-        note_item_container = NoteItemContainer(
-            os.path.join(self.folder, item))
+        note_item_container = NoteItemContainer(item)
+        note_item_container.setMainFrame(self.main_frame)
         panel = panels.NoteOverviewPanel(
             self.main_frame, wx.ID_ANY, note_item_container)
         self.main_frame.showPanel(panel)
@@ -50,14 +50,15 @@ class CategoryItemContainer(ItemContainer):
         path = os.path.join(self.folder, folder)
         os.mkdir(path)
         self.arr_container_items.append(new_item)
-        self.dirs.append(folder)
+        self.path_components.append(folder)
         self.regenerateItemsDict()
 
     def deleteItem(self, index):
         super().deleteItem(index)
-        shutil.rmtree(os.path.join(self.folder, self.dirs[index]), True)
+        shutil.rmtree(
+            os.path.join(self.folder, self.path_components[index]), True)
         self.regenerateItemsDict()
-        del self.dirs[index]
+        del self.path_components[index]
         del self.arr_container_items[index]
 
     def fillContainer(self):
@@ -69,17 +70,15 @@ class CategoryItemContainer(ItemContainer):
             if not os.path.isdir(sub_path):
                 continue
             self.arr_container_items.append(name)
-            self.dirs.append(obj['folder'])
-
-    def setMainFrame(self, frame):
-        self.main_frame = frame
+            self.path_components.append(obj['folder'])
 
     def regenerateItemsDict(self):
         items_dict = self.settings.getSetting('items')
         for i in range(len(self.arr_container_items)):
             category = self.arr_container_items[i]
             if category not in items_dict:
-                items_dict[category] = dict(folder=self.dirs[i], items=[])
+                items_dict[category] = dict(folder=self.path_components[i],
+                                            items=dict())
             item_dir = os.path.join(
                 self.folder, items_dict[category]['folder'])
             if not os.path.isdir(item_dir):

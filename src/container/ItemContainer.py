@@ -14,6 +14,9 @@ Log
 | Wesley Ameling           | 04-01-2018 | Tweaked the size of the frame and|
 |                          |            | added a hasItem method.          |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 05-01-2018 | Rename dirs list                 |
++--------------------------+------------+----------------------------------+
+
 """
 
 
@@ -21,6 +24,8 @@ class ItemContainer(object):
 
     def __init__(self):
         self.arr_container_items = []
+        self.path_components = []
+        self.main_frame = None
         self.fillContainer()
 
     def getItems(self):
@@ -45,3 +50,6 @@ class ItemContainer(object):
 
     def hasItem(self, item):
         return item in self.arr_container_items
+
+    def setMainFrame(self, frame):
+        self.main_frame = frame

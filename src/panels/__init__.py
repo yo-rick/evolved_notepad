@@ -11,6 +11,8 @@ Log
 | Wesley Ameling           | 04-01-2017 | Added ManagePanel, CategoryManage|
 |                          |            | Panel and NoteManagePanel        |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 05-01-2018 | Add NotePanel                    |
++--------------------------+------------+----------------------------------+
 
 """
 from .BasePanel import BasePanel
@@ -21,3 +23,4 @@ from .SettingsPanel import SettingsPanel
 from .ManagePanel import ManagePanel
 from .CategoryManagePanel import CategoryManagePanel
 from .NoteManagePanel import NoteManagePanel
+from .NotePanel import NotePanel
