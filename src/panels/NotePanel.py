@@ -32,11 +32,18 @@ class NotePanel(BasePanel):
         super().__init__(parent, id, 'Notitie scherm', note_name)
         self.note_path = note_path
         int_fontSize = 12 #uit instellingenscherm
+        fontFam = wx.FONTFAMILY_DEFAULT #uit instellingenscherm
 #fonts
-        fnt_settings = wx.Font(int_fontSize, wx.FONTFAMILY_DEFAULT,
-                                  wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
-        self.fnt_boldKnop = wx.Font(10, wx.FONTFAMILY_DEFAULT,
-                                    wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)#self is tijdelijk
+        self.fnt_settings = wx.Font(int_fontSize, fontFam,
+                                    wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)#data uit settings nodig
+        self.fnt_settingsBold = wx.Font(int_fontSize, fontFam,
+                                        wx.FONTSTYLE_NORMAL,
+                                        wx.FONTWEIGHT_BOLD)#data uit settings nodig
+        self.fnt_settingsItal = wx.Font(int_fontSize, fontFam,
+                                        wx.FONTSTYLE_ITALIC,
+                                        wx.FONTWEIGHT_NORMAL)#data uit settings nodig
+        fnt_boldKnop = wx.Font(10, wx.FONTFAMILY_DEFAULT,
+                               wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         fnt_italicKnop = wx.Font(10, wx.FONTFAMILY_DEFAULT,
                                  wx.FONTSTYLE_ITALIC, wx.FONTWEIGHT_NORMAL)
 #text
@@ -52,7 +59,7 @@ class NotePanel(BasePanel):
         self.btn_terug = self.buttonMaker("Terug", self.terugKnop)
         self.btn_opslaan = self.buttonMaker("Opslaan", self.opslaanKnop)
         self.btn_bold = self.buttonMaker("Bold", self.boldKnop,
-                                         self.fnt_boldKnop)
+                                         fnt_boldKnop)
         self.btn_italic = self.buttonMaker("Italic", self.italicKnop,
                                       fnt_italicKnop)
         
@@ -79,6 +86,13 @@ class NotePanel(BasePanel):
         #komende tekst wordt italic tot volgende klik
         #self.notitieVeld.SetDefaultStyle(wx.TextAttr(wx.NullColour, font=<font>))
         print("Clicked italic")
+        tpl_selectPos = self.notitieVeld.GetSelection()
+        if tpl_selectPos[0] != tpl_selectPos[1]:
+            str_selectie = self.notitieVeld.GetStringSelection()
+            self.notitieVeld.SetDefaultStyle(wx.TextAttr(wx.NullColour,font=
+                                                         self.fnt_settingsItal))
+            self.notitieVeld.Replace(tpl_selectPos[0], tpl_selectPos[1],
+                                     str_selectie)
 
     def boldKnop(self, event):
         #komende tekst wordt bold tot volgende klik, nu alleen selectie. OPSLAAN WERKT NIET
@@ -87,7 +101,7 @@ class NotePanel(BasePanel):
         if tpl_selectPos[0] != tpl_selectPos[1]:
             str_selectie = self.notitieVeld.GetStringSelection()
             self.notitieVeld.SetDefaultStyle(wx.TextAttr(wx.NullColour,font=
-                                                         self.fnt_boldKnop))
+                                                         self.fnt_settingsBold))
             self.notitieVeld.Replace(tpl_selectPos[0], tpl_selectPos[1],
                                      str_selectie)
 
