@@ -21,6 +21,8 @@ Log
 import os
 
 import wx
+
+import MainFrame
 from .BasePanel import BasePanel
 
 
