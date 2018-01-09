@@ -29,6 +29,9 @@ Log
 | Wesley Ameling           | 04-01-2018 | Implement scroll panel updating  |
 |                          |            | and the ManageDialog link        |
 +--------------------------+------------+----------------------------------+
+| Tjardo Maarseveen        | 09-01-2017 | Edited code based on guidelines  |
+|                          |            | and updated the searchfunction   |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
@@ -52,8 +55,7 @@ class BaseOverviewPanel(BasePanel):
         super().__init__(parent, id, frame_title, panel_title)
         self.item_container = item_container
         self.show_back_button = show_back_button
-        # Layout
-        self.pnl_scroll = scrolled.ScrolledPanel(
+        self.sp_scroll = scrolled.ScrolledPanel(
             self, wx.ID_ANY, style=wx.SUNKEN_BORDER)
         self.txt_title = self.textMaker(panel_title, self.fnt_title)
         self.vbox_overview = wx.BoxSizer(wx.VERTICAL)
@@ -74,7 +76,7 @@ class BaseOverviewPanel(BasePanel):
             child.DeleteWindows()
         items = self.item_container.getItems()
         for idx in range(len(items)):
-            btn_item = wx.Button(self.pnl_scroll, label=items[idx],
+            btn_item = wx.Button(self.sp_scroll, label=items[idx],
                                  pos=(0, 50 + 50 * idx), size=(0, 40))
             btn_item.Bind(wx.EVT_BUTTON,
                           lambda event, idx=idx: self.itemButton(event, idx))
@@ -84,16 +86,16 @@ class BaseOverviewPanel(BasePanel):
 
     def searchItemList(self, search_term):
         if search_term:
-            children = self.pnl_scroll.GetChildren()
+            children = self.sp_scroll.GetChildren()
             for idx in range(len(children)):
                 child = children[idx]
-                if search_term in child.GetLabel():
+                if search_term.lower() in child.GetLabel().lower():
                     child.SetPosition((0, 50 + 50 * idx))
                     self.bSizer.Show(child)
                 else:
                     self.bSizer.Hide(child)
-        self.pnl_scroll.Layout()
-        self.pnl_scroll.SetupScrolling(scrollToTop=False)
+        self.sp_scroll.Layout()
+        self.sp_scroll.SetupScrolling(scrollToTop=False)
 
     def generateTitleBox(self):
         self.vbox_overview.Add(wx.StaticText(self, wx.ID_ANY, ""), .1, wx.LEFT)
@@ -106,11 +108,11 @@ class BaseOverviewPanel(BasePanel):
         self.vbox_overview.Add(hbox_title, 1, wx.CENTRE | wx.ALL)
 
     def setupScrollPanel(self):
-        self.pnl_scroll.SetupScrolling()
-        self.pnl_scroll.SetBackgroundColour((255, 255, 255))
-        self.pnl_scroll.SetSizer(self.bSizer)
+        self.sp_scroll.SetupScrolling()
+        self.sp_scroll.SetBackgroundColour((255, 255, 255))
+        self.sp_scroll.SetSizer(self.bSizer)
         flags = wx.EXPAND | wx.LEFT | wx.RIGHT
-        self.vbox_overview.Add(self.pnl_scroll, 7, flags, 10)
+        self.vbox_overview.Add(self.sp_scroll, 7, flags, 10)
 
     def generateButtonBox(self):
         txt_version = self.textMaker(
