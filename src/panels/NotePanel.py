@@ -20,6 +20,8 @@ import os
 
 import wx
 import wx.richtext
+
+import MainFrame
 from .BasePanel import BasePanel
 
 
@@ -39,7 +41,7 @@ class NotePanel(BasePanel):
                                  wx.FONTSTYLE_ITALIC, wx.FONTWEIGHT_NORMAL)
 #text
         self.txt_titel = self.textMaker(self.getPanelTitle(), self.fnt_title)
-        self.txt_versie = self.textMaker("versie 0.0.1")
+        self.txt_versie = self.textMaker(MainFrame.VERSION_STRING)
 #notitieveld
 ##        self.notitieVeld = wx.TextCtrl(self, -1,
 ##                                       size=(800,600), style=wx.TE_MULTILINE,
@@ -102,6 +104,8 @@ class NotePanel(BasePanel):
     def opslaanKnop(self, event):
         #zet tekst uit veld in notitie bestand
         print("Save button pressed.")
+        if self.note_path:
+            open(self.note_path, 'a').close()
         self.notitieVeld.DoSaveFile(file=self.note_path)
 
 
