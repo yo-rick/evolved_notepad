@@ -13,6 +13,8 @@ Log
 | Wesley Ameling           | 03-01-2018 | Replaced -1 with proper ID's,    |
 |                          |            | added default fonts              |
 +--------------------------+------------+----------------------------------+
+| Joey Nap                 | 10-01-2018 | Added fontMaker method.          |
++--------------------------+------------+----------------------------------+
 """
 import wx
 
@@ -24,10 +26,8 @@ class BasePanel(wx.Panel):
         self.frame_title = frame_title
         self.panel_title = panel_title
         # fonts
-        self.fnt_title = wx.Font(18, wx.FONTFAMILY_DEFAULT,
-                                 wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
-        self.fnt_default = wx.Font(10, wx.FONTFAMILY_DEFAULT,
-                                   wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL)
+        self.fnt_title = self.fontMaker(18, FM_weight=wx.FONTWEIGHT_BOLD)
+        self.fnt_default = self.fontMaker()
 
     def textMaker(self, TM_textLabel, TM_font=None, style=0):
         if TM_font is None:
@@ -45,6 +45,11 @@ class BasePanel(wx.Panel):
         btn_button.SetFont(BM_lblFont)
         btn_button.SetDefault()
         return btn_button
+
+    def fontMaker(self, FM_size=10, FM_family=wx.FONTFAMILY_DEFAULT,
+                  FM_style=wx.FONTSTYLE_NORMAL, FM_weight=wx.FONTWEIGHT_NORMAL):
+        fnt_font = wx.Font(FM_size, FM_family, FM_style, FM_weight)
+        return fnt_font
 
     def getFrameTitle(self):
         return self.frame_title
