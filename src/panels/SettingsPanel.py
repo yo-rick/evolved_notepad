@@ -11,6 +11,11 @@ Log
 +--------------------------+------------+-----------------------------------+
 | Wesley Ameling           | 03-01-2018 | Removed panel size                |
 +--------------------------+------------+-----------------------------------+
+| Yorik Bruijne            | 07-01-2018 | Added "self." to some vars        |
+|                          |            | Dropdownbox shows last saved      |
+|                          |            | setting                           |
+|                          |            | Checkbos shows last saved setting |
++--------------------------+------------+-----------------------------------+
 
 """
 
@@ -54,12 +59,12 @@ class SettingsPanel(wx.Panel):
 
     def fileSettings(self, id):
         fs_pad = self.settings.getSetting("path")
-        fs_pad_txt = wx.StaticText(self, id, fs_pad)
+        self.fs_pad_txt = wx.StaticText(self, id, fs_pad)
         fs_hbox = self.createPrefixAndFolder(id)
         fs_main_mbox_border = wx.StaticBox(self, id, FILE_SETTINGS)
         fs_main_vbox = wx.StaticBoxSizer(fs_main_mbox_border, wx.VERTICAL)
         fs_main_vbox.Add(fs_hbox, 1, wx.EXPAND)
-        fs_main_vbox.Add(fs_pad_txt, 1, wx.EXPAND)
+        fs_main_vbox.Add(self.fs_pad_txt, 1, wx.EXPAND)
         return fs_main_vbox
 
     def createPrefixAndFolder(self, id):
@@ -118,6 +123,7 @@ class SettingsPanel(wx.Panel):
         cebl_font_choices = ["Default", "Modern", "Roman", "Script",
                              "Swiss", "Teletype"]
         self.cebl_combo_box = wx.ComboBox(self, choices=cebl_font_choices)
+        self.cebl_combo_box.SetValue(self.settings.getSetting("font-family"))
         cebl_vbox = wx.BoxSizer(wx.VERTICAL)
         cebl_vbox.Add(self.cebl_combo_box, 1,
                       wx.EXPAND | wx.ALIGN_CENTRE_VERTICAL)
@@ -137,5 +143,6 @@ class SettingsPanel(wx.Panel):
         cebr_vbox.Add(self.cebr_font_size_spinner, 1, expand_center_flag)
         cebr_vbox.Add(self.cebr_tab_spinner, 1, expand_center_flag)
         self.cebr_cb = wx.CheckBox(self)
+        self.cebr_cb.SetValue(self.settings.getSetting("automatic-save"))
         cebr_vbox.Add(self.cebr_cb, 1, expand_center_flag)
         return cebr_vbox
