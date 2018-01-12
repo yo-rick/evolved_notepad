@@ -74,23 +74,53 @@ class NotePanel(BasePanel):
         return box_newSizer
 
     def italicKnop(self, event):
-        print("Clicked italic")
-        tpl_selectPos = self.notitieVeld.GetSelection()
-        if tpl_selectPos[0] != tpl_selectPos[1]:
-            self.notitieVeld.SetStyle(tpl_selectPos[0], tpl_selectPos[1],wx.TextAttr(wx.NullColour,font=self.fontMaker(FM_style=wx.FONTSTYLE_ITALIC)))
+        tpl_selection = self.notitieVeld.GetSelection()
+        isSelection = tpl_selection[0] != tpl_selection[1]
+        unknownStyle = wx.TextAttr()
+        self.notitieVeld.GetStyle(tpl_selection[0], unknownStyle)
+        isItalic = unknownStyle.GetFontStyle() == wx.FONTSTYLE_ITALIC
+        isBold = unknownStyle.GetFontWeight() == wx.FONTWEIGHT_BOLD
+        if isSelection == False:
+            return
+        if isBold and isItalic:
+            #selectie is bold en italic
+            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Bold()))
+        elif isBold:
+            #selectie is bold
+            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Bold().Italic()))
+        elif isItalic:
+            #selectie is italic
+            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont))
+        else:
+            #selectie is normaal
+            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Italic()))
 
     def boldKnop(self, event):
-        print("Clicked bold")
         tpl_selection = self.notitieVeld.GetSelection()
-        if tpl_selection[0] != tpl_selection[1]:
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.fontMaker(FM_weight=wx.FONTWEIGHT_BOLD)))
+        isSelection = tpl_selection[0] != tpl_selection[1]
+        unknownStyle = wx.TextAttr()
+        self.notitieVeld.GetStyle(tpl_selection[0], unknownStyle)
+        isItalic = unknownStyle.GetFontStyle() == wx.FONTSTYLE_ITALIC
+        isBold = unknownStyle.GetFontWeight() == wx.FONTWEIGHT_BOLD
+        if isSelection == False:
+            return
+        if isBold and isItalic:
+            #selectie is bold en italic
+            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Italic()))
+        elif isBold:
+            #selectie is bold
+            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont))
+        elif isItalic:
+            #selectie is italic
+            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Bold().Italic()))
+        else:
+            #selectie is normaal
+            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Bold()))
 
     def terugKnop(self, event):
-        print("Clicked Back")
         self.GetParent().goBack()
 
     def opslaanKnop(self, event):
-        print("Clicked save")
         if self.note_path:
             open(self.note_path, 'a').close()
         self.notitieVeld.SaveFile(filename=self.note_path)
