@@ -20,10 +20,11 @@ from pathlib import Path
 DEFAULT_SETTINGS = {
     'path': os.path.join(str(Path.home()), 'EvolvedNotepad'),
     'prefix': '',
-    'font-family': '?',
+    'font-family': 'Default',
     'font-size': 10,
     'tab-length': 4,
-    'items': dict()
+    'items': dict(),
+    'automatic-save': False
 }
 
 SETTINGS_FILE_PATH = os.path.join(os.path.dirname(__file__), '.settings.json')
