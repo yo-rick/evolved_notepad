@@ -24,6 +24,7 @@ import os
 import wx
 
 import MainFrame
+from settings import Settings
 from .BasePanel import BasePanel
 
 
@@ -32,35 +33,93 @@ class NotePanel(BasePanel):
     def __init__(self, parent, id, note_name, note_path):
         super().__init__(parent, id, 'Notitie scherm', note_name)
         self.note_path = note_path
-#fonts
-        boldBtnFont = self.fontMaker(FM_weight=wx.FONTWEIGHT_BOLD)
-        italBtnFont = self.fontMaker(FM_style=wx.FONTSTYLE_ITALIC)
-        self.settingsFont = self.fontMaker()
-#text
-        self.txt_titel = self.textMaker(self.getPanelTitle(), self.fnt_title)
-        self.txt_versie = self.textMaker(MainFrame.VERSION_STRING)
-#notitieveld
-        self.notitieVeld = wx.TextCtrl(self, -1,
-                                       size=(800,600), style=wx.TE_MULTILINE,
-                                       name="Note")
-        self.notitieVeld.SetFont(self.settingsFont)
-        self.bold = False
-        if os.path.isfile(self.note_path):
-            self.notitieVeld.LoadFile(filename=self.note_path)
-#buttons    
-        self.btn_terug = self.buttonMaker("Terug", self.terugKnop)
-        self.btn_opslaan = self.buttonMaker("Opslaan", self.opslaanKnop)
-        self.btn_bold = self.buttonMaker("Bold", self.boldKnop,
-                                         boldBtnFont)
-        self.btn_italic = self.buttonMaker("Italic", self.italicKnop,
-                                           italBtnFont)
-#boxes
-        box_titelStyle = self.boxMaker([self.txt_titel, (0, 0), self.btn_italic,self.btn_bold], [20, 40, 10, 10],[wx.ALL, wx.ALL, wx.ALL, wx.ALL])
-        box_notitieVeld = self.boxMaker([self.notitieVeld], [10], [wx.ALL])
-        box_btnsVersie = self.boxMaker([self.btn_terug, (0, 0), self.txt_versie,(0, 0), self.btn_opslaan],[10, 20, 10, 20, 10],[wx.ALL, wx.ALL, wx.ALL, wx.ALL, wx.ALL])
-        box_mainBox = self.boxMaker([box_titelStyle, box_notitieVeld,box_btnsVersie], [10, 80, 10],[wx.ALL, wx.ALL, wx.ALIGN_CENTER_HORIZONTAL],wx.VERTICAL, [10,10,10])
+        self.settings = self.getSettings()
+        self.fonts = self.createFonts(self.settings)
+        self.note_field = wx.TextCtrl(self, wx.ID_ANY, style=wx.TE_MULTILINE)
+        self.note_field.SetFont(self.fonts['normal'])
+        #self.note_field.Bind(wx.EVT_CHAR, self.prevent)
+        self.loadFile()
+        box_title_row = self.createTitleRow()
+        box_note_field = self.boxMaker(
+            [self.note_field], [10], [wx.ALL | wx.EXPAND])
+        box_bottom_row = self.createBottomRow()
+        box_main = self.boxMaker(
+            [box_title_row, box_note_field, box_bottom_row], [10, 80, 10],
+            [wx.ALL | wx.EXPAND, wx.ALL | wx.EXPAND,
+             wx.ALIGN_CENTER_HORIZONTAL], wx.VERTICAL, [10, 10, 10])
+        self.SetSizer(box_main)
 
-        self.SetSizer(box_mainBox)
+    def getSettings(self):
+        settings = Settings.getInstance()
+        settings_font_family = settings.getSetting('font-family').upper()
+        font_family = getattr(wx, 'FONTFAMILY_' + settings_font_family,
+                              wx.FONTFAMILY_DEFAULT)
+        font_size = settings.getSetting('font-size')
+        tab_length = settings.getSetting('tab_length')
+        automatic_save = settings.getSetting('automatic-save')
+        return dict(font_family=font_family, font_size=font_size,
+                    tab_length=tab_length, automatic_save=automatic_save)
+
+    def createFonts(self, settings):
+        base_font = self.fontMaker(
+            FM_size=settings['font_size'], FM_family=settings['font_family'])
+        bold_font = base_font.Bold()
+        italic_font = base_font.Italic()
+        bold_italic_font = bold_font.Italic()
+        return dict(normal=base_font, bold=bold_font, italic=italic_font,
+                    bold_italic=bold_italic_font)
+
+    def loadFile(self):
+        pass
+
+    # def prevent(self, evt):
+    #     evt.Skip(False)
+    #     print(evt.GetKeyCode())
+
+    def setItalicFontStyle(self, font_style, is_italic, is_bold):
+        if is_italic and is_bold:
+            font_style.SetFont(self.fonts['bold'])
+        elif is_bold:
+            font_style.SetFont(self.fonts['bold_italic'])
+        elif is_italic:
+            font_style.SetFont(self.fonts['normal'])
+        else:
+            font_style.SetFont(self.fonts['italic'])
+
+    def setBoldFontStyle(self, font_style, is_italic, is_bold):
+        if is_italic and is_bold:
+            font_style.SetFont(self.fonts['italic'])
+        elif is_bold:
+            font_style.SetFont(self.fonts['normal'])
+        elif is_italic:
+            font_style.SetFont(self.fonts['bold_italic'])
+        else:
+            font_style.SetFont(self.fonts['bold'])
+
+    def italicBoldButton(self, event):
+        pressed_italic = event.GetEventObject().GetLabel().lower() == 'italic'
+        lst_selection = list(self.note_field.GetSelection())
+        if lst_selection[0] == lst_selection[1]:
+            return
+        selected_text_style = wx.TextAttr()
+        self.note_field.GetStyle(lst_selection[0], selected_text_style)
+        is_italic = selected_text_style.GetFontStyle() == wx.FONTSTYLE_ITALIC
+        is_bold = selected_text_style.GetFontWeight() == wx.FONTWEIGHT_BOLD
+        new_text_style = wx.TextAttr(wx.NullColour)
+        if pressed_italic:
+            self.setItalicFontStyle(new_text_style, is_italic, is_bold)
+        else:
+            self.setBoldFontStyle(new_text_style, is_italic, is_bold)
+        lst_selection.append(new_text_style)
+        self.note_field.SetStyle(*lst_selection)
+
+    def backButton(self, event):
+        self.GetParent().goBack()
+
+    def saveButton(self, event):
+        if self.note_path:
+            open(self.note_path, 'a').close()
+        self.note_field.SaveFile(filename=self.note_path)
 
     def boxMaker(self, BxM_itemList, BxM_size, BxM_flagList,
                  BxM_rotatie=wx.HORIZONTAL, BxM_borderList=False):
@@ -73,61 +132,20 @@ class NotePanel(BasePanel):
                 border=BxM_borderList[Pos])
         return box_newSizer
 
-    def italicKnop(self, event):
-        tpl_selection = self.notitieVeld.GetSelection()
-        isSelection = tpl_selection[0] != tpl_selection[1]
-        unknownStyle = wx.TextAttr()
-        self.notitieVeld.GetStyle(tpl_selection[0], unknownStyle)
-        isItalic = unknownStyle.GetFontStyle() == wx.FONTSTYLE_ITALIC
-        isBold = unknownStyle.GetFontWeight() == wx.FONTWEIGHT_BOLD
-        if isSelection == False:
-            return
-        if isBold and isItalic:
-            #selectie is bold en italic
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Bold()))
-        elif isBold:
-            #selectie is bold
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Bold().Italic()))
-        elif isItalic:
-            #selectie is italic
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont))
-        else:
-            #selectie is normaal
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Italic()))
+    def createTitleRow(self):
+        btn_bold = self.buttonMaker("Bold", self.italicBoldButton,
+                                    self.fnt_title.Bold())
+        btn_italic = self.buttonMaker("Italic", self.italicBoldButton,
+                                      self.fnt_title.Italic())
+        txt_title = self.textMaker(self.getPanelTitle(), self.fnt_title)
+        return self.boxMaker(
+            [txt_title, (0, 0), btn_italic, btn_bold], [20, 40, 10, 10],
+            [wx.ALL] * 4)
 
-    def boldKnop(self, event):
-        tpl_selection = self.notitieVeld.GetSelection()
-        isSelection = tpl_selection[0] != tpl_selection[1]
-        unknownStyle = wx.TextAttr()
-        self.notitieVeld.GetStyle(tpl_selection[0], unknownStyle)
-        isItalic = unknownStyle.GetFontStyle() == wx.FONTSTYLE_ITALIC
-        isBold = unknownStyle.GetFontWeight() == wx.FONTWEIGHT_BOLD
-        if isSelection == False:
-            return
-        if isBold and isItalic:
-            #selectie is bold en italic
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Italic()))
-        elif isBold:
-            #selectie is bold
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont))
-        elif isItalic:
-            #selectie is italic
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Bold().Italic()))
-        else:
-            #selectie is normaal
-            self.notitieVeld.SetStyle(tpl_selection[0], tpl_selection[1],wx.TextAttr(wx.NullColour,font=self.settingsFont.Bold()))
-
-    def terugKnop(self, event):
-        self.GetParent().goBack()
-
-    def opslaanKnop(self, event):
-        if self.note_path:
-            open(self.note_path, 'a').close()
-        self.notitieVeld.SaveFile(filename=self.note_path)
-
-
-if __name__ == '__main__':  
-    app = wx.App()  
-    frame = NotePanel(None, -1, 'test', 'test')
-    frame.Show()  
-    app.MainLoop()
+    def createBottomRow(self):
+        btn_back = self.buttonMaker("Terug", self.backButton)
+        btn_save = self.buttonMaker("Opslaan", self.saveButton)
+        txt_version = self.textMaker(MainFrame.VERSION_STRING)
+        return self.boxMaker(
+            [btn_back, (0, 0), txt_version, (0, 0), btn_save],
+            [10, 20, 10, 20, 10], [wx.ALL] * 5)

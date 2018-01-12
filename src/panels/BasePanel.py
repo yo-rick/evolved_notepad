@@ -47,9 +47,9 @@ class BasePanel(wx.Panel):
         return btn_button
 
     def fontMaker(self, FM_size=10, FM_family=wx.FONTFAMILY_DEFAULT,
-                  FM_style=wx.FONTSTYLE_NORMAL, FM_weight=wx.FONTWEIGHT_NORMAL):
-        fnt_font = wx.Font(FM_size, FM_family, FM_style, FM_weight)
-        return fnt_font
+                  FM_style=wx.FONTSTYLE_NORMAL,
+                  FM_weight=wx.FONTWEIGHT_NORMAL):
+        return wx.Font(FM_size, FM_family, FM_style, FM_weight)
 
     def getFrameTitle(self):
         return self.frame_title
