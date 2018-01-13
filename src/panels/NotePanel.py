@@ -48,6 +48,8 @@ class NotePanel(BasePanel):
         self.note_field.SetFont(self.fonts['normal'])
         self.note_field_wrapper = TextCtrlWrapper(
             self.note_field, self.settings['tab_length'])
+        if not os.path.exists(note_path):
+            os.mknod(note_path)
         self.loadFile()
         box_title_row = self.createTitleRow()
         box_note_field = self.boxMaker(
@@ -96,16 +98,15 @@ class NotePanel(BasePanel):
         pos = 0
         for line in noteText:
             for char in line:
+                print("pos:", char)
                 if char == "\x05":
                     italStart = pos
                 elif char == "\x06":
-                    italStop = pos
-                    self.loadStyles(True, italStart, italStop)
+                    self.loadStyles(True, italStart, pos)
                 elif char == "\x07":
                     boldStart = pos
                 elif char == "\x08":
-                    boldStop = pos
-                    self.loadStyles(False, boldStart, boldStop)
+                    self.loadStyles(False, boldStart, pos)
                 else:
                     self.note_field.WriteText(char)
                     pos += 1
