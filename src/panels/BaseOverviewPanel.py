@@ -32,6 +32,10 @@ Log
 | Tjardo Maarseveen        | 09-01-2017 | Edited code based on guidelines  |
 |                          |            | and updated the searchfunction   |
 +--------------------------+------------+----------------------------------+
+| Tjardo Maarseveen        | 13-01-2018 | Generating messages for the user |
+|                          |            | when there are no items to be    |
+|                          |            | found                            |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
@@ -81,6 +85,8 @@ class BaseOverviewPanel(BasePanel):
             btn_item.Bind(wx.EVT_BUTTON,
                           lambda event, idx=idx: self.itemButton(event, idx))
             self.bSizer.Add(btn_item, 0, wx.EXPAND | wx.ALL, 5)
+        if len(items) == 0:
+            self.noItemsMessage()
         self.bSizer.Layout()
         self.searchItemList(self.searchbar.GetValue())
 
@@ -155,3 +161,13 @@ class BaseOverviewPanel(BasePanel):
     def onUpdateField(self, event):
         self.searchItemList(self.searchbar.GetValue())
         event.Skip()
+
+    def noItemsMessage(self):
+        if "Categorie" in self.frame_title:
+            txt_message = self.textMaker("Er zijn geen notities beschikbaar",
+                                   self.fnt_default)
+        else :
+            txt_message = self.textMaker("Er zijn geen categorieën",
+                                         self.fnt_default)
+        self.bSizer.Add(self.textMaker("", self.fnt_default), 3, wx.CENTER, 5)
+        self.bSizer.Add(txt_message, 3, wx.CENTER, 5)
