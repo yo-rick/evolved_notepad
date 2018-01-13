@@ -10,7 +10,9 @@ Log
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 05-01-2018 | Implement methods                |
 +--------------------------+------------+----------------------------------+
-
+| Tjardo Maarseveen        | 13-01-2018 | Implementing alphabetical order  |
+|                          |            | for items in container           |
++--------------------------+------------+----------------------------------+
 """
 import os
 from uuid import uuid4
@@ -44,6 +46,7 @@ class NoteItemContainer(ItemContainer):
     def createItem(self, new_item):
         file_name = str(uuid4())
         self.arr_container_items.append(new_item)
+        self.arr_container_items = sorted(self.arr_container_items)
         self.path_components.append(file_name)
         self.regenerateItemsDict()
 
@@ -61,6 +64,7 @@ class NoteItemContainer(ItemContainer):
         for name, note_name in item_dict['items'].items():
             self.arr_container_items.append(name)
             self.path_components.append(note_name)
+        self.arr_container_items = sorted(self.arr_container_items)
 
     def regenerateItemsDict(self):
         items = self.settings.getSetting('items')

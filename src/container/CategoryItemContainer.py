@@ -13,6 +13,9 @@ Log
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 05-01-2018 | Reflect name changes in base clss|
 +--------------------------+------------+----------------------------------+
+| Tjardo Maarseveen        | 13-01-2018 | Implementing alphabetical order  |
+|                          |            | for items in container           |
++--------------------------+------------+----------------------------------+
 
 """
 import os
@@ -50,6 +53,7 @@ class CategoryItemContainer(ItemContainer):
         path = os.path.join(self.folder, folder)
         os.mkdir(path)
         self.arr_container_items.append(new_item)
+        self.arr_container_items = sorted(self.arr_container_items)
         self.path_components.append(folder)
         self.regenerateItemsDict()
 
@@ -71,6 +75,7 @@ class CategoryItemContainer(ItemContainer):
                 continue
             self.arr_container_items.append(name)
             self.path_components.append(obj['folder'])
+        self.arr_container_items = sorted(self.arr_container_items)
 
     def regenerateItemsDict(self):
         items_dict = self.settings.getSetting('items')
