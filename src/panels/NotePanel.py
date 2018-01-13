@@ -17,11 +17,15 @@ Log
 | Joey Nap                 | 09-01-2018 | Reverted back to Textctrl. Also  |
 |                          |            | implemented italic to selection. |
 +--------------------------+------------+----------------------------------+
+| Joey Nap                 | 12-01-2018 | Changes to bold/italic functions |
++--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 12-01-2018 | Clean-up file and implement bold |
 |                          |            | and italic realtime typing and   |
 |                          |            | saving it to a file              |
 +--------------------------+------------+----------------------------------+
-
+| Joey Nap                 | 13-01-2018 | Loading files and applying the   |
+|                          |            | correct styles.                  |
++--------------------------+------------+----------------------------------+
 """
 import os
 
@@ -75,8 +79,46 @@ class NotePanel(BasePanel):
         return dict(normal=base_font, bold=bold_font, italic=italic_font,
                     bold_italic=bold_italic_font)
 
+    def byteFlagRanges(self, string, startFlag, stopFlag):
+        Start = 0
+        Stop = 0
+        Ranges = []
+        while Start != -1:
+            Start = string.find(startFlag, Start+len(startFlag))
+            if Start != -1:
+                Stop = string.find(stopFlag, Stop+len(stopFlag))
+                Ranges.append(Start)
+                Ranges.append(Stop+1)
+            else:
+                return Ranges
+
+    def loadStyles(self, italic, ranges):
+        for x in range(0, len(ranges), 2):
+            selected_text_style = wx.TextAttr()
+            self.note_field.GetStyle(ranges[x], selected_text_style)
+            is_italic = selected_text_style.GetFontStyle() == wx.FONTSTYLE_ITALIC
+            is_bold = selected_text_style.GetFontWeight() == wx.FONTWEIGHT_BOLD
+            new_text_style = wx.TextAttr(wx.NullColour)
+            self.setFontStyle(
+                italic, new_text_style, is_italic, is_bold)
+            self.note_field.SetStyle(ranges[x], ranges[x+1], new_text_style)
+
+    def removeFlags(self, italicFlags, boldFlags):
+        allFlags = italicFlags + boldFlags
+        allFlags.sort(reverse=True)
+        for x in allFlags:
+            self.note_field.Remove(x, x+1)#posities onjuist, sommige zijn al verdwenen?
+
     def loadFile(self):
-        pass
+        self.note_field.LoadFile(self.note_path)
+        lineText = ""
+        for line in range(0, self.note_field.GetNumberOfLines()):
+            lineText += self.note_field.GetLineText(line)
+        italicRanges = self.byteFlagRanges(lineText, "\x05", "\x06")
+        self.loadStyles(True, italicRanges)
+        boldRanges = self.byteFlagRanges(lineText, "\x07", "\x08")
+        self.loadStyles(False, boldRanges)
+        #self.removeFlags(italicRanges, boldRanges)
 
     def setFontStyle(self, italic, font_style, is_italic, is_bold):
         if italic:
