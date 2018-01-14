@@ -25,11 +25,12 @@ Log
 |                          |            | other folder                     |
 +--------------------------+------------+----------------------------------+
 """
-import wx
-import sys
-import panels
 import os
+import shutil
 
+import wx
+
+import panels
 from settings import Settings
 
 
@@ -56,27 +57,32 @@ class SettingsDialog(wx.Dialog):
 
     def select_Dir(self, event):
         sd_old_dir = self.settings.getSetting("path")
-        sd_dir = wx.DirDialog(self, "kies een map:", style=wx.DD_DEFAULT_STYLE)
+        sd_dir = wx.DirDialog(self, "Kies een map:", style=wx.DD_DEFAULT_STYLE)
         if sd_dir.ShowModal() == wx.ID_OK:
             sd_get_dir = sd_dir.GetPath()
-            sd_mv_dir = "mv " + sd_old_dir + " " + sd_get_dir
-            os.system(sd_mv_dir)
-            sd_get_dir = sd_get_dir + "/notes" 
+            for category, comp in self.settings.getSetting('items').items():
+                path = os.path.join(sd_old_dir, comp['folder'])
+                shutil.move(path, sd_get_dir)
             self.settings.setSetting("path", sd_get_dir)
-            if len(sd_get_dir) > 55 and len(sd_get_dir) < 100:
+            if 55 < len(sd_get_dir) < 100:
                 sd_get_dir = sd_get_dir[0:50] + "\n" + sd_get_dir[50:]
             if len(sd_get_dir) > 105:
-                sd_get_dir = sd_get_dir[0:50] + "\n" + sd_get_dir[50:100] \
-                             + "\n" + sd_get_dir[100:]
+                sd_get_dir = (sd_get_dir[0:50] + "\n" + sd_get_dir[50:100]
+                              + "\n" + sd_get_dir[100:])
             self.panel.fs_pad_txt.SetLabel(sd_get_dir)
             self.settings.writeToFile()
         sd_dir.Destroy()
     
     def save(self, event):
-        self.settings.setSetting("prefix", self.panel.cpaf_prefix_textfield.GetValue())
-        self.settings.setSetting("font-family", self.panel.cebl_combo_box.GetValue())
-        self.settings.setSetting("font-size", self.panel.cebr_font_size_spinner.GetValue())
-        self.settings.setSetting("tab-length", self.panel.cebr_tab_spinner.GetValue())
-        self.settings.setSetting("automatic-save", self.panel.cebr_cb.GetValue())
+        self.settings.setSetting(
+            "prefix", self.panel.cpaf_prefix_textfield.GetValue())
+        self.settings.setSetting(
+            "font-family", self.panel.cebl_combo_box.GetValue())
+        self.settings.setSetting(
+            "font-size", self.panel.cebr_font_size_spinner.GetValue())
+        self.settings.setSetting(
+            "tab-length", self.panel.cebr_tab_spinner.GetValue())
+        self.settings.setSetting(
+            "automatic-save", self.panel.cebr_cb.GetValue())
         self.settings.writeToFile()
         self.Destroy()
