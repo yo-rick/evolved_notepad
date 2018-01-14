@@ -84,7 +84,7 @@ class SettingsPanel(BasePanel):
         c_dial.SetYesNoLabels("&Ja", "&Nee")
         result = c_dial.ShowModal()
         if result == wx.ID_YES:
-            self.Destroy()
+            self.GetParent().goBack()
         else:
             pass
 
@@ -104,7 +104,7 @@ class SettingsPanel(BasePanel):
                 shutil.move(path, self.path)
             self.settings.setSetting("path", self.path)
         self.settings.writeToFile()
-        self.Destroy()
+        self.GetParent().goBack()
 
     def selectDir(self, event):
         sd_dir = wx.DirDialog(self, "Kies een map:", style=wx.DD_DEFAULT_STYLE)
@@ -112,7 +112,7 @@ class SettingsPanel(BasePanel):
             self.path = sd_dir.GetPath()
             self.fs_pad_txt.SetValue(self.path)
             self.settings.writeToFile()
-        sd_dir.Destroy()
+        self.GetParent().goBack()
 
     def fileSettings(self, id):
         fs_hbox = self.createPrefixAndFolder(id)
