@@ -167,10 +167,12 @@ class BaseOverviewPanel(BasePanel):
 
     def noItemsMessage(self):
         if "Categorie" in self.frame_title:
-            txt_message = self.textMaker("Er zijn geen notities beschikbaar",
-                                   self.fnt_default)
+            txt_message = self.textMaker(
+                "Er zijn geen notities beschikbaar", self.fnt_default,
+                parent=self.sp_scroll)
         else :
-            txt_message = self.textMaker("Er zijn geen categorieën",
-                                         self.fnt_default)
+            txt_message = self.textMaker(
+                "Er zijn geen categorieën", self.fnt_default,
+                parent=self.sp_scroll)
         self.bSizer.Add(self.textMaker("", self.fnt_default), 3, wx.CENTER, 5)
         self.bSizer.Add(txt_message, 3, wx.CENTER, 5)

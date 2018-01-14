@@ -15,6 +15,9 @@ Log
 +--------------------------+------------+----------------------------------+
 | Joey Nap                 | 10-01-2018 | Added fontMaker method.          |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 14-01-2018 | Add parent parameter in textmaker|
++--------------------------+------------+----------------------------------+
+
 """
 import wx
 
@@ -29,11 +32,13 @@ class BasePanel(wx.Panel):
         self.fnt_title = self.fontMaker(18, FM_weight=wx.FONTWEIGHT_BOLD)
         self.fnt_default = self.fontMaker()
 
-    def textMaker(self, TM_textLabel, TM_font=None, style=0):
+    def textMaker(self, TM_textLabel, TM_font=None, style=0, parent=None):
         if TM_font is None:
             TM_font = self.fnt_default
+        if parent is None:
+            parent = self
         txt_staticText = wx.StaticText(
-            self, wx.ID_ANY, TM_textLabel, style=style)
+            parent, wx.ID_ANY, TM_textLabel, style=style)
         txt_staticText.SetFont(TM_font)
         return txt_staticText
 

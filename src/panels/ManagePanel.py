@@ -3,7 +3,8 @@
 | Wesley Ameling           | 04-01-2018 | Initial creation                 |
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 14-01-2018 | Edit so this can be used as      |
-|                          |            | a regular panel                  |
+|                          |            | a regular panel, add unavailable |
+|                          |            | message                          |
 +--------------------------+------------+----------------------------------+
 
 """
@@ -36,6 +37,7 @@ class ManagePanel(BasePanel):
         self.text_multiple = multiple
         self.item_container = item_container
         self.marked_items = []
+        self.added_message = False
         # Widgets
         self.input_ctrl = wx.TextCtrl(
             self, style=wx.HSCROLL | wx.TE_PROCESS_ENTER)
@@ -44,6 +46,9 @@ class ManagePanel(BasePanel):
             self, wx.ID_ANY, style=wx.SUNKEN_BORDER)
         self.scroll_sizer = wx.BoxSizer(wx.VERTICAL)
         self.delete_button = self.buttonMaker(DELETE, self.deleteSelection)
+        self.unavailable_text = text = self.textMaker(
+            "Er zijn geen " + self.text_multiple.lower(),
+            parent=self.scroll_panel)
         # Draw screen
         self.box_container = wx.BoxSizer(wx.VERTICAL)
         self.fillBoxContainer()
@@ -67,6 +72,7 @@ class ManagePanel(BasePanel):
         self.scroll_panel.SetupScrolling()
         self.scroll_panel.SetBackgroundColour((255, 255, 255))
         items = self.item_container.getItems()
+        self.scroll_sizer.Add(self.unavailable_text, 1, wx.CENTER, 5)
         for idx in range(len(items)):
             self.scroll_sizer.Add(
                 self.createSizerForItem(idx, items[idx]),
@@ -74,6 +80,7 @@ class ManagePanel(BasePanel):
         self.scroll_panel.SetSizer(self.scroll_sizer)
         self.box_container.Add(
             self.scroll_panel, 5, wx.EXPAND | PADDING_FLAG, 10)
+        self.refreshList()
 
     def createSizerForItem(self, idx, item):
         checkbox = wx.CheckBox(self.scroll_panel)
@@ -115,11 +122,12 @@ class ManagePanel(BasePanel):
         self.box_container.Add(horizontal, 1, wx.EXPAND | PADDING_FLAG, 10)
 
     def refreshList(self):
+        got_items = bool(len(self.item_container.getItems()))
+        self.delete_button.Enable(got_items)
+        self.unavailable_text.Show(not got_items)
         self.scroll_sizer.Layout()
         self.scroll_panel.Layout()
         self.scroll_panel.SetupScrolling(scrollToTop=False)
-        self.delete_button.Enable(
-            bool(len(self.item_container.getItems())))
 
     def addInput(self, evt):
         text = self.input_ctrl.GetValue()
@@ -140,7 +148,7 @@ class ManagePanel(BasePanel):
         self.marked_items.sort()
         for idx in self.marked_items[::-1]:
             self.item_container.deleteItem(idx)
-            self.scroll_sizer.GetItem(idx).DeleteWindows()
+            self.scroll_sizer.GetItem(idx + 1).DeleteWindows()
         self.marked_items.clear()
         self.refreshList()
 
