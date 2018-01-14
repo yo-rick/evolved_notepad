@@ -44,7 +44,7 @@ SELECT_FOLDER = "Map selecteren"
 EDIT_SETTINGS = "Bewerkingsinstellingen"
 TAB_LENGTH = "Tab lengte"
 AUTOMATIC_SAVE = "Automatisch opslaan"
-CANCEL = "Anuleren"
+CANCEL = "Annuleren"
 SAVE = "Opslaan"
 
 
@@ -79,7 +79,8 @@ class SettingsPanel(BasePanel):
 
     def cancel(self, event):
         c_dial = wx.MessageDialog(self, "Weet je zeker dat je de wijzigingen"
-                                  " niet wilt oplsaan?", "Info", wx.YES_NO | wx.ICON_WARNING)
+                                  " niet wilt opslaan?", "Info", wx.YES_NO |
+                                  wx.ICON_WARNING)
         c_dial.SetYesNoLabels("&Ja", "&Nee")
         result = c_dial.ShowModal()
         if result == wx.ID_YES:
