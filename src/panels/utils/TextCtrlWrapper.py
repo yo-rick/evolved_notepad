@@ -6,6 +6,11 @@ Log
 | Wesley Ameling           | 12-01-2018 | Create this file, implement key  |
 |                          |            | handling for TextCtrls           |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 13-01-2018 | Delete selection when backspace  |
+|                          |            | or del is pressed (if anything   |
+|                          |            | was selected)                    |
++--------------------------+------------+----------------------------------+
+
 """
 import wx
 
@@ -31,10 +36,8 @@ class TextCtrlWrapper(object):
 
     def writeByteFlag(self, out, on_tag, off_tag, previous, now):
         if now and not previous:
-            print("1")
             out.write(on_tag)
         elif not now and previous:
-            print("2")
             out.write(off_tag)
 
     def saveToFile(self, file_path):
@@ -72,12 +75,21 @@ class TextCtrlWrapper(object):
             self.ctrl.WriteText(chr(self.key_code))
 
     def handleDeleteCharacters(self):
+        selection = self.ctrl.GetSelection()
+        has_selection = selection[0] != selection[1]
         if self.key_code == wx.WXK_BACK:
-            self.ctrl.Remove(self.current_position - 1, self.current_position)
-        elif ((self.key_code == wx.WXK_DELETE
-               or self.key_code == wx.WXK_NUMPAD_DELETE)
-              and self.current_position != self.last_position):
-            self.ctrl.Remove(self.current_position, self.current_position + 1)
+            if has_selection:
+                self.ctrl.Remove(selection[0], selection[1])
+            else:
+                self.ctrl.Remove(self.current_position - 1,
+                                 self.current_position)
+        elif (self.key_code == wx.WXK_DELETE
+               or self.key_code == wx.WXK_NUMPAD_DELETE):
+            if has_selection:
+                self.ctrl.Remove(selection[0], selection[1])
+            elif self.current_position != self.last_position:
+                self.ctrl.Remove(self.current_position,
+                                 self.current_position + 1)
 
     def handleArrowCharacters(self):
         self.getXYPosition()

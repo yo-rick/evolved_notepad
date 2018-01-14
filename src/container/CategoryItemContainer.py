@@ -53,7 +53,7 @@ class CategoryItemContainer(ItemContainer):
         path = os.path.join(self.folder, folder)
         os.mkdir(path)
         self.arr_container_items.append(new_item)
-        self.arr_container_items = sorted(self.arr_container_items)
+        self.arr_container_items.sort()
         self.path_components.append(folder)
         self.regenerateItemsDict()
 
@@ -75,7 +75,7 @@ class CategoryItemContainer(ItemContainer):
                 continue
             self.arr_container_items.append(name)
             self.path_components.append(obj['folder'])
-        self.arr_container_items = sorted(self.arr_container_items)
+        self.arr_container_items.sort()
 
     def regenerateItemsDict(self):
         items_dict = self.settings.getSetting('items')

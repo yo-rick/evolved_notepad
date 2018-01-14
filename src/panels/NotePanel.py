@@ -26,6 +26,9 @@ Log
 | Joey Nap                 | 13-01-2018 | Loading files and applying the   |
 |                          |            | correct styles.                  |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 13-01-2018 | Cleaner loading of files         |
++--------------------------+------------+----------------------------------+
+
 """
 import os
 
@@ -48,8 +51,6 @@ class NotePanel(BasePanel):
         self.note_field.SetFont(self.fonts['normal'])
         self.note_field_wrapper = TextCtrlWrapper(
             self.note_field, self.settings['tab_length'])
-        if not os.path.exists(note_path):
-            os.mknod(note_path)
         self.loadFile()
         box_title_row = self.createTitleRow()
         box_note_field = self.boxMaker(
@@ -81,35 +82,35 @@ class NotePanel(BasePanel):
         return dict(normal=base_font, bold=bold_font, italic=italic_font,
                     bold_italic=bold_italic_font)
 
-    def loadStyles(self, italic, start, stop):
-        selected_text_style = wx.TextAttr()
-        self.note_field.GetStyle(start, selected_text_style)
-        is_italic = selected_text_style.GetFontStyle() == wx.FONTSTYLE_ITALIC
-        is_bold = selected_text_style.GetFontWeight() == wx.FONTWEIGHT_BOLD
-        new_text_style = wx.TextAttr(wx.NullColour)
-        self.setFontStyle(
-            italic, new_text_style, is_italic, is_bold)
-        self.note_field.SetStyle(start, stop, new_text_style)
+    def handleFlag(self, style, flag):
+        is_italic = style.GetFontStyle() == wx.FONTSTYLE_ITALIC
+        is_bold = style.GetFontWeight() == wx.FONTWEIGHT_BOLD
+        if flag == "\x05" and not is_bold:
+            style.SetFontWeight(wx.FONTWEIGHT_BOLD)
+        elif flag == "\x06" and is_bold:
+            style.SetFontWeight(wx.FONTWEIGHT_NORMAL)
+        elif flag == "\x07" and not is_italic:
+            style.SetFontStyle(wx.FONTSTYLE_ITALIC)
+        elif flag == "\x08" and is_italic:
+            style.SetFontStyle(wx.FONTSTYLE_NORMAL)
+        else:
+            return False
+        self.note_field.SetDefaultStyle(style)
+        return True
 
     def loadFile(self):
-        noteFile = open(self.note_path, 'r')
-        noteText = noteFile.readlines()
-        noteFile.close()
-        pos = 0
-        for line in noteText:
-            for char in line:
-                print("pos:", char)
-                if char == "\x05":
-                    italStart = pos
-                elif char == "\x06":
-                    self.loadStyles(True, italStart, pos)
-                elif char == "\x07":
-                    boldStart = pos
-                elif char == "\x08":
-                    self.loadStyles(False, boldStart, pos)
-                else:
+        if not os.path.isfile(self.note_path):
+            return
+        with open(self.note_path, 'r') as out:
+            font_style = wx.TextAttr()
+            char = out.read(1)
+            while char:
+                if not self.handleFlag(font_style, char):
                     self.note_field.WriteText(char)
-                    pos += 1
+                char = out.read(1)
+        style = self.note_field.GetDefaultStyle()
+        style.SetFont(self.fonts['normal'])
+        self.note_field.SetDefaultStyle(style)
 
     def setFontStyle(self, italic, font_style, is_italic, is_bold):
         if italic:
@@ -131,10 +132,18 @@ class NotePanel(BasePanel):
             else:
                 font_style.SetFont(self.fonts['bold'])
 
+    def setBackgroundColour(self, button):
+        current_colour = button.GetBackgroundColour()
+        if current_colour == (255, 255, 255, 255):
+            button.SetBackgroundColour((135, 135, 135, 255))
+        else:
+            button.SetBackgroundColour((255, 255, 255, 255))
+
     def italicBoldButton(self, event):
         pressed_italic = event.GetEventObject().GetLabel().lower() == 'italic'
         lst_selection = list(self.note_field.GetSelection())
         if lst_selection[0] == lst_selection[1]:
+            self.setBackgroundColour(event.GetEventObject())
             font_style = self.note_field.GetDefaultStyle()
             is_italic = font_style.GetFontStyle() == wx.FONTSTYLE_ITALIC
             is_bold = font_style.GetFontWeight() == wx.FONTWEIGHT_BOLD
@@ -153,6 +162,8 @@ class NotePanel(BasePanel):
         self.note_field.SetStyle(*lst_selection)
 
     def backButton(self, event):
+        if self.settings['automatic_save']:
+            self.note_field_wrapper.saveToFile(self.note_path)
         self.GetParent().goBack()
 
     def saveButton(self, event):
@@ -170,10 +181,12 @@ class NotePanel(BasePanel):
         return box_newSizer
 
     def createTitleRow(self):
-        btn_bold = self.buttonMaker("Bold", self.italicBoldButton,
-                                    self.fnt_title.Bold())
-        btn_italic = self.buttonMaker("Italic", self.italicBoldButton,
-                                      self.fnt_title.Italic())
+        btn_bold = self.buttonMaker(
+            "Bold", self.italicBoldButton,
+            self.fontMaker(FM_weight=wx.FONTWEIGHT_BOLD))
+        btn_italic = self.buttonMaker(
+            "Italic", self.italicBoldButton,
+            self.fontMaker(FM_style=wx.FONTSTYLE_ITALIC))
         txt_title = self.textMaker(self.getPanelTitle(), self.fnt_title)
         return self.boxMaker(
             [txt_title, (0, 0), btn_italic, btn_bold], [20, 40, 10, 10],

@@ -13,6 +13,8 @@ Log
 | Tjardo Maarseveen        | 13-01-2018 | Implementing alphabetical order  |
 |                          |            | for items in container           |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 13-01-2018 | Use prefix setting for filenames |
++--------------------------+------------+----------------------------------+
 """
 import os
 from uuid import uuid4
@@ -44,9 +46,9 @@ class NoteItemContainer(ItemContainer):
         self.main_frame.showPanel(note_panel)
 
     def createItem(self, new_item):
-        file_name = str(uuid4())
+        file_name = self.settings.getSetting('prefix') + str(uuid4())
         self.arr_container_items.append(new_item)
-        self.arr_container_items = sorted(self.arr_container_items)
+        self.arr_container_items.sort()
         self.path_components.append(file_name)
         self.regenerateItemsDict()
 
@@ -64,7 +66,10 @@ class NoteItemContainer(ItemContainer):
         for name, note_name in item_dict['items'].items():
             self.arr_container_items.append(name)
             self.path_components.append(note_name)
-        self.arr_container_items = sorted(self.arr_container_items)
+        self.arr_container_items.sort()
+
+    def reloadSettings(self):
+        self.settings = Settings.getInstance()
 
     def regenerateItemsDict(self):
         items = self.settings.getSetting('items')
