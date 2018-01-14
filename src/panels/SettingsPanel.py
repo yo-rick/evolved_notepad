@@ -42,7 +42,7 @@ class SettingsPanel(wx.Panel):
 
     def __init__(self, parent, id):
         super().__init__(parent, id)
-        self.settings = Settings.getInstance()
+        self.settings = Settings()
         self.IP_vbox = wx.BoxSizer(wx.VERTICAL)
         self.IP_vbox.Add(self.createTitle(id))
         self.IP_vbox.AddSpacer(10)

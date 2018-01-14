@@ -28,6 +28,7 @@ class ManagePanel(BasePanel):
     def __init__(self, parent, id, item_container, singular, multiple):
         title = "{} {}".format(multiple, MANAGE)
         super().__init__(parent, id, title, title)
+        item_container.reloadSettings()
         self.text_singular = singular
         self.text_multiple = multiple
         self.item_container = item_container

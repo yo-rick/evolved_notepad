@@ -28,7 +28,7 @@ CATEGORIES = "Categorieën"
 class CategoryOverviewPanel(BaseOverviewPanel):
 
     def __init__(self, parent, id):
-        directory_path = Settings.getInstance().getSetting('path')
+        directory_path = Settings().getSetting('path')
         category_item_container = CategoryItemContainer(directory_path)
         category_item_container.setMainFrame(parent)
         super().__init__(parent, id, OVERVIEW_SCREEN, CATEGORIES,

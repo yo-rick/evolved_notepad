@@ -35,16 +35,10 @@ SETTINGS_FILE_PATH = os.path.join(os.path.dirname(__file__), '.settings.json')
 class Settings(object):
     instance = None
 
-    @staticmethod
-    def getInstance():
-        if Settings.instance is None:
-            Settings.instance = Settings()
-            Settings.instance.loadFromFile()
-        return Settings.instance
-
     def __init__(self):
         self.loadedFromFile = False
         self.settings = {}
+        self.loadFromFile()
 
     def loadFromFile(self):
         if not self.loadedFromFile:

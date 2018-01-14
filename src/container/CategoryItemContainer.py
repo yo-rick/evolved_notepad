@@ -33,9 +33,8 @@ from .NoteItemContainer import NoteItemContainer
 class CategoryItemContainer(ItemContainer):
 
     def __init__(self, categoryFolder):
-        self.folder = categoryFolder
-        self.settings = Settings.getInstance()
         super().__init__()
+        self.folder = categoryFolder
 
     def clickItem(self, index):
         super().clickItem(index)

@@ -19,5 +19,3 @@ class NoteManagePanel(ManagePanel):
 
     def __init__(self, parent, id, item_container):
         super().__init__(parent, id, item_container, NOTE, NOTES)
-        item_container.reloadSettings()
-

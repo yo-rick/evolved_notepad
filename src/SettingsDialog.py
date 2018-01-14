@@ -38,7 +38,7 @@ class SettingsDialog(wx.Dialog):
         self.panel.cbb_button_anu.Bind(wx.EVT_BUTTON, self.cancel)
         self.panel.cbb_button_ops.Bind(wx.EVT_BUTTON, self.save)
         self.panel.cpaf_select_opslagmap.Bind(wx.EVT_BUTTON, self.select_Dir)
-        self.settings = Settings.getInstance()
+        self.settings = Settings()
         self.ShowModal()
 
     def cancel(self, event):

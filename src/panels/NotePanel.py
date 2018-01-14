@@ -63,7 +63,7 @@ class NotePanel(BasePanel):
         self.SetSizer(box_main)
 
     def getSettings(self):
-        settings = Settings.getInstance()
+        settings = Settings()
         settings_font_family = settings.getSetting('font-family').upper()
         font_family = getattr(wx, 'FONTFAMILY_' + settings_font_family,
                               wx.FONTFAMILY_DEFAULT)

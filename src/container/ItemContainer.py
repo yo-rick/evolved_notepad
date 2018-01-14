@@ -16,8 +16,11 @@ Log
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 05-01-2018 | Rename dirs list                 |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 14-01-2018 | Add settings                     |
++--------------------------+------------+----------------------------------+
 
 """
+from settings import Settings
 
 
 class ItemContainer(object):
@@ -26,7 +29,7 @@ class ItemContainer(object):
         self.arr_container_items = []
         self.path_components = []
         self.main_frame = None
-        self.fillContainer()
+        self.settings = Settings()
 
     def getItems(self):
         # Copy so nothing can be added to this list
@@ -53,3 +56,6 @@ class ItemContainer(object):
 
     def setMainFrame(self, frame):
         self.main_frame = frame
+
+    def reloadSettings(self):
+        self.settings = Settings()

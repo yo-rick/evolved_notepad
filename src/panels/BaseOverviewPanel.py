@@ -58,6 +58,7 @@ class BaseOverviewPanel(BasePanel):
                  show_back_button=False):
         super().__init__(parent, id, frame_title, panel_title)
         self.item_container = item_container
+        self.item_container.fillContainer()
         self.show_back_button = show_back_button
         self.sp_scroll = scrolled.ScrolledPanel(
             self, wx.ID_ANY, style=wx.SUNKEN_BORDER)

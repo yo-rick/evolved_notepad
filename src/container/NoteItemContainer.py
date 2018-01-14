@@ -29,13 +29,12 @@ from .ItemContainer import ItemContainer
 class NoteItemContainer(ItemContainer):
 
     def __init__(self, category):
-        self.settings = Settings.getInstance()
+        super().__init__()
         self.category = category
         self.items = self.settings.getSetting('items')
         self.folder = os.path.join(
             self.settings.getSetting('path'),
             self.items[self.category]['folder'])
-        super().__init__()
 
     def clickItem(self, index):
         super().clickItem(index)
@@ -46,6 +45,7 @@ class NoteItemContainer(ItemContainer):
         self.main_frame.showPanel(note_panel)
 
     def createItem(self, new_item):
+        self.reloadSettings()
         file_name = self.settings.getSetting('prefix') + str(uuid4())
         self.arr_container_items.append(new_item)
         self.arr_container_items.sort()
@@ -68,9 +68,6 @@ class NoteItemContainer(ItemContainer):
             self.path_components.append(note_name)
         self.arr_container_items.sort()
 
-    def reloadSettings(self):
-        self.settings = Settings.getInstance()
-
     def regenerateItemsDict(self):
         items = self.settings.getSetting('items')
         items_dict = items[self.category]['items']
@@ -92,3 +89,10 @@ class NoteItemContainer(ItemContainer):
 
     def getCategoryName(self):
         return self.category
+
+    def reloadSettings(self):
+        super().reloadSettings()
+        self.folder = os.path.join(
+            self.settings.getSetting('path'),
+            self.items[self.category]['folder'])
+        self.items = self.settings.getSetting('items')
