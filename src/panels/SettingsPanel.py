@@ -15,16 +15,26 @@ Log
 |                          |            | Dropdownbox shows last saved      |
 |                          |            | setting                           |
 |                          |            | Checkbos shows last saved setting |
+|                          |            | Made the buttons functional       |
 +--------------------------+------------+-----------------------------------+
-
+| Yorick Bruijne           | 11-01-2018 | Added a dialog after "Anuleren"   |
+|                          |            | select dir shows correct dir      |
++--------------------------+------------+-----------------------------------+
+| Yorick Bruijne           | 14-01-2018 | Notes can now be moved to an      |
+|                          |            | other folder                      |
++--------------------------+------------+-----------------------------------+
+| Wesley Ameling           | 14-01-2018 | Improve moving, moving on save and|
+|                          |            | minor layout improvement          |
++--------------------------+------------+-----------------------------------+
 """
+import os
+import shutil
 
 import wx
 
 import MainFrame
-import sys
 from settings import Settings
-
+from .BasePanel import BasePanel
 
 SETTINGS = "Instellingen"
 FILE_SETTINGS = "Bestandsinstellingen"
@@ -38,28 +48,72 @@ CANCEL = "Anuleren"
 SAVE = "Opslaan"
 
 
-class SettingsPanel(wx.Panel):
+class SettingsPanel(BasePanel):
 
     def __init__(self, parent, id):
-        super().__init__(parent, id)
+        super().__init__(parent, id, "Instellingen", "Instellingen")
         self.settings = Settings()
+        self.path = self.settings.getSetting('path')
+        self.fs_pad_txt = wx.TextCtrl(self, wx.ID_ANY, value=self.path,
+                                      style=wx.TE_READONLY)
         self.IP_vbox = wx.BoxSizer(wx.VERTICAL)
         self.IP_vbox.Add(self.createTitle(id))
         self.IP_vbox.AddSpacer(10)
         self.IP_vbox.Add(self.fileSettings(id), 1, wx.EXPAND)
         self.IP_vbox.AddSpacer(10)
         self.IP_vbox.Add(self.createEditSettings(id), 1, wx.EXPAND)
-        self.IP_vbox.AddSpacer(10)
+        self.IP_vbox.AddStretchSpacer(5)
         self.IP_vbox.Add(self.createBottomBox(id), 1, wx.EXPAND)
         self.IP_hbox = wx.BoxSizer(wx.HORIZONTAL)
         self.IP_hbox.AddSpacer(20)
         self.IP_hbox.Add(self.IP_vbox, 1, wx.EXPAND)
         self.IP_hbox.AddSpacer(20)
         self.SetSizer(self.IP_hbox)
+        self.bindEvents()
+
+    def bindEvents(self):
+        self.cbb_button_anu.Bind(wx.EVT_BUTTON, self.cancel)
+        self.cbb_button_ops.Bind(wx.EVT_BUTTON, self.save)
+        self.cpaf_select_opslagmap.Bind(wx.EVT_BUTTON, self.selectDir)
+        self.settings = Settings()
+
+    def cancel(self, event):
+        c_dial = wx.MessageDialog(self, "Weet je zeker dat je de wijzigingen"
+                                  " niet wilt oplsaan?", "Info", wx.YES_NO | wx.ICON_WARNING)
+        c_dial.SetYesNoLabels("&Ja", "&Nee")
+        result = c_dial.ShowModal()
+        if result == wx.ID_YES:
+            self.Destroy()
+        else:
+            pass
+
+    def save(self, event):
+        self.settings.setSetting(
+            "prefix", self.cpaf_prefix_textfield.GetValue())
+        self.settings.setSetting("font-family", self.cebl_combo_box.GetValue())
+        self.settings.setSetting(
+            "font-size", self.cebr_font_size_spinner.GetValue())
+        self.settings.setSetting(
+            "tab-length", self.cebr_tab_spinner.GetValue())
+        self.settings.setSetting("automatic-save", self.cebr_cb.GetValue())
+        old_path = self.settings.getSetting('path')
+        if old_path != self.path:
+            for category, comp in self.settings.getSetting('items').items():
+                path = os.path.join(old_path, comp['folder'])
+                shutil.move(path, self.path)
+            self.settings.setSetting("path", self.path)
+        self.settings.writeToFile()
+        self.Destroy()
+
+    def selectDir(self, event):
+        sd_dir = wx.DirDialog(self, "Kies een map:", style=wx.DD_DEFAULT_STYLE)
+        if sd_dir.ShowModal() == wx.ID_OK:
+            self.path = sd_dir.GetPath()
+            self.fs_pad_txt.SetValue(self.path)
+            self.settings.writeToFile()
+        sd_dir.Destroy()
 
     def fileSettings(self, id):
-        fs_pad = self.settings.getSetting("path")
-        self.fs_pad_txt = wx.StaticText(self, id, fs_pad)
         fs_hbox = self.createPrefixAndFolder(id)
         fs_main_mbox_border = wx.StaticBox(self, id, FILE_SETTINGS)
         fs_main_vbox = wx.StaticBoxSizer(fs_main_mbox_border, wx.VERTICAL)

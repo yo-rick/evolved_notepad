@@ -17,8 +17,8 @@ Log
 """
 import wx
 
-import panels
 from .BaseOverviewPanel import BaseOverviewPanel
+from .NoteManagePanel import NoteManagePanel
 
 
 CATEGORY_SCREEN = "Categorie scherm"
@@ -33,6 +33,6 @@ class NoteOverviewPanel(BaseOverviewPanel):
 
     def manageButton(self, event):
         parent = self.GetParent()
-        manage_panel = panels.NoteManagePanel(
+        manage_panel = NoteManagePanel(
             parent, wx.ID_ANY, self.item_container)
         parent.showPanel(manage_panel)

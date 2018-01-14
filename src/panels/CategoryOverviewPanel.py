@@ -17,10 +17,10 @@ Log
 """
 import wx
 
-import panels
 from container import CategoryItemContainer
 from settings import Settings
 from .BaseOverviewPanel import BaseOverviewPanel
+from .CategoryManagePanel import CategoryManagePanel
 
 
 OVERVIEW_SCREEN = "Overzicht scherm"
@@ -38,6 +38,6 @@ class CategoryOverviewPanel(BaseOverviewPanel):
 
     def manageButton(self, event):
         parent = self.GetParent()
-        manage_panel = panels.CategoryManagePanel(
+        manage_panel = CategoryManagePanel(
             parent, wx.ID_ANY, self.item_container)
         parent.showPanel(manage_panel)

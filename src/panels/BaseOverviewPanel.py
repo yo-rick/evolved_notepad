@@ -42,8 +42,9 @@ import wx
 import wx.lib.scrolledpanel as scrolled
 
 import MainFrame
-from SettingsDialog import SettingsDialog
 from .BasePanel import BasePanel
+from .SettingsPanel import SettingsPanel
+
 
 SETTINGS = "Instellingen"
 MANAGE = "Beheren"
@@ -148,7 +149,8 @@ class BaseOverviewPanel(BasePanel):
         return vbox_manage
 
     def settingsButton(self, event):
-        SettingsDialog(self.GetParent(), wx.ID_ANY)
+        parent = self.GetParent()
+        parent.showPanel(SettingsPanel(parent, wx.ID_ANY))
 
     def manageButton(self, event):
         raise NotImplementedError
