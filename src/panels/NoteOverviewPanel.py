@@ -11,10 +11,13 @@ Log
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 04-01-2018 | Implement link to ManagePanel    |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 14-01-2018 | Load manage panel via mainframe  |
++--------------------------+------------+----------------------------------+
 
 """
 import wx
 
+import panels
 from ManageDialog import ManageDialog
 from .BaseOverviewPanel import BaseOverviewPanel
 
@@ -30,5 +33,7 @@ class NoteOverviewPanel(BaseOverviewPanel):
             note_item_container.getCategoryName(), note_item_container, True)
 
     def manageButton(self, event):
-        ManageDialog(self.GetParent(), wx.ID_ANY, self.item_container, False)
-        super().manageButton(event)
+        parent = self.GetParent()
+        manage_panel = panels.NoteManagePanel(
+            parent, wx.ID_ANY, self.item_container)
+        parent.showPanel(manage_panel)

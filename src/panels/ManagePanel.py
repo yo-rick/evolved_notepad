@@ -2,6 +2,9 @@
 +--------------------------+------------+----------------------------------+
 | Wesley Ameling           | 04-01-2018 | Initial creation                 |
 +--------------------------+------------+----------------------------------+
+| Wesley Ameling           | 14-01-2018 | Edit so this can be used as      |
+|                          |            | a regular panel                  |
++--------------------------+------------+----------------------------------+
 
 """
 
@@ -56,6 +59,7 @@ class ManagePanel(BasePanel):
         self.createNewItemSizer()
         add_button = self.buttonMaker(ADD, self.addInput)
         self.box_container.Add(add_button, 1, wx.EXPAND | PADDING_FLAG, 10)
+        self.box_container.AddStretchSpacer(2)
         self.createVersionAndBack()
 
     def createScrollPanel(self):
@@ -104,7 +108,7 @@ class ManagePanel(BasePanel):
         vertical_wrapper.Add(version_txt, 1, wx.ALIGN_CENTER)
         horizontal.Add(vertical_wrapper, 1, wx.EXPAND)
         back_button = self.buttonMaker(
-            BACK, lambda evt: self.GetParent().Destroy())
+            BACK, lambda evt: self.GetParent().goBack())
         horizontal.Add(back_button, 1, wx.EXPAND)
         self.box_container.Add(horizontal, 1, wx.EXPAND | PADDING_FLAG, 10)
 
@@ -114,9 +118,6 @@ class ManagePanel(BasePanel):
         self.scroll_panel.SetupScrolling(scrollToTop=False)
         self.delete_button.Enable(
             bool(len(self.item_container.getItems())))
-        stack = self.GetParent().GetParent().panel_stack
-        if stack and isinstance(stack[-1], BaseOverviewPanel):
-            stack[-1].refreshItemList()
 
     def addInput(self, evt):
         text = self.input_ctrl.GetValue()

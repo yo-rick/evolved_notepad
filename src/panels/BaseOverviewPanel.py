@@ -151,7 +151,7 @@ class BaseOverviewPanel(BasePanel):
         SettingsDialog(self.GetParent(), wx.ID_ANY)
 
     def manageButton(self, event):
-        self.refreshItemList()
+        raise NotImplementedError
 
     def backButton(self, event):
         self.GetParent().goBack()
