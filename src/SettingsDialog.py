@@ -21,11 +21,14 @@ Log
 | Yorick Bruijne           | 11-01-2017 | Added a dialog after "Anuleren"  |
 |                          |            | select dir shows correct dir     |
 +--------------------------+------------+----------------------------------+
-
+| Yorick Bruijne           | 14-01-2017 | Notes can now be moved to an     |
+|                          |            | other folder                     |
++--------------------------+------------+----------------------------------+
 """
 import wx
 import sys
 import panels
+import os
 
 from settings import Settings
 
@@ -52,10 +55,13 @@ class SettingsDialog(wx.Dialog):
             pass
 
     def select_Dir(self, event):
-        print("Select dir")
+        sd_old_dir = self.settings.getSetting("path")
         sd_dir = wx.DirDialog(self, "kies een map:", style=wx.DD_DEFAULT_STYLE)
         if sd_dir.ShowModal() == wx.ID_OK:
             sd_get_dir = sd_dir.GetPath()
+            sd_mv_dir = "mv " + sd_old_dir + " " + sd_get_dir
+            os.system(sd_mv_dir)
+            sd_get_dir = sd_get_dir + "/notes" 
             self.settings.setSetting("path", sd_get_dir)
             if len(sd_get_dir) > 55 and len(sd_get_dir) < 100:
                 sd_get_dir = sd_get_dir[0:50] + "\n" + sd_get_dir[50:]
