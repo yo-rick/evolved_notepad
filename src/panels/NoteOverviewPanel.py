@@ -18,7 +18,6 @@ Log
 import wx
 
 import panels
-from ManageDialog import ManageDialog
 from .BaseOverviewPanel import BaseOverviewPanel
 
 

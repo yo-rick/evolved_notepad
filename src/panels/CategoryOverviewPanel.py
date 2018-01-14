@@ -18,8 +18,6 @@ Log
 import wx
 
 import panels
-from MainFrame import MainFrame
-from ManageDialog import ManageDialog
 from container import CategoryItemContainer
 from settings import Settings
 from .BaseOverviewPanel import BaseOverviewPanel
