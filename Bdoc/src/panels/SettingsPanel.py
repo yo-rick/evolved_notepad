@@ -35,16 +35,16 @@ import MainFrame
 from settings import Settings
 from .BasePanel import BasePanel
 
-g_str_SETTINGS = "Instellingen"
-g_str_FILE_SETTINGS = "Bestandsinstellingen"
-g_str_PREFIX = "Prefix"
-g_str_SAVE_FOLDER = "Opslagmap"
-g_str_SELECT_FOLDER = "Map selecteren"
-g_str_EDIT_SETTINGS = "Bewerkingsinstellingen"
-g_str_TAB_LENGTH = "Tab lengte"
-g_str_AUTOMATIC_SAVE = "Automatisch opslaan"
-g_str_CANCEL = "Annuleren"
-g_str_SAVE = "Opslaan"
+SETTINGS = "Instellingen"
+FILE_SETTINGS = "Bestandsinstellingen"
+PREFIX = "Prefix"
+SAVE_FOLDER = "Opslagmap"
+SELECT_FOLDER = "Map selecteren"
+EDIT_SETTINGS = "Bewerkingsinstellingen"
+TAB_LENGTH = "Tab lengte"
+AUTOMATIC_SAVE = "Automatisch opslaan"
+CANCEL = "Annuleren"
+SAVE = "Opslaan"
 
 
 class SettingsPanel(BasePanel):
@@ -117,17 +117,17 @@ class SettingsPanel(BasePanel):
 
     def fileSettings(self, id):
         hbox = self.createPrefixAndFolder(id)
-        main_mbox_border = wx.StaticBox(self, id, g_str_FILE_SETTINGS)
+        main_mbox_border = wx.StaticBox(self, id, FILE_SETTINGS)
         main_vbox = wx.StaticBoxSizer(main_mbox_border, wx.VERTICAL)
         main_vbox.Add(hbox, 1, wx.EXPAND)
         main_vbox.Add(self.tf_pad_txt, 1, wx.EXPAND)
         return main_vbox
 
     def createPrefixAndFolder(self, id):
-        prefix_txt = wx.StaticText(self, id, g_str_PREFIX)
+        prefix_txt = wx.StaticText(self, id, PREFIX)
         self.tf_prefix = wx.TextCtrl(self)
-        save_folder_txt = wx.StaticText(self, id, g_str_SAVE_FOLDER)
-        self.select_opslagmap = wx.Button(self, id, g_str_SELECT_FOLDER)
+        save_folder_txt = wx.StaticText(self, id, SAVE_FOLDER)
+        self.select_opslagmap = wx.Button(self, id, SELECT_FOLDER)
         vbox_left = wx.BoxSizer(wx.VERTICAL)
         vbox_left.AddSpacer(5)
         vbox_left.Add(prefix_txt, 1, wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
@@ -143,8 +143,8 @@ class SettingsPanel(BasePanel):
         return hbox
 
     def createBottomBox(self, id):
-        self.btn_anu = wx.Button(self, id, g_str_CANCEL)
-        self.btn_ops = wx.Button(self, id, g_str_SAVE)
+        self.btn_anu = wx.Button(self, id, CANCEL)
+        self.btn_ops = wx.Button(self, id, SAVE)
         version_txt = wx.StaticText(self, id, MainFrame.VERSION_STRING,
                                     style=wx.ALIGN_CENTER)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -156,22 +156,22 @@ class SettingsPanel(BasePanel):
     def createTitle(self, id):
         fnt_title = wx.Font(18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL,
                             wx.FONTWEIGHT_BOLD)
-        title_txt = wx.StaticText(self, id, g_str_SETTINGS)
+        title_txt = wx.StaticText(self, id, SETTINGS)
         title_txt.SetFont(fnt_title)
         return title_txt
 
     def createEditSettings(self, id):
         vbox_left = self.createEditBoxLeft(id)
         vbox_right = self.createEditBoxRight(id)
-        hbox_border = wx.StaticBox(self, id, g_str_EDIT_SETTINGS)
+        hbox_border = wx.StaticBox(self, id, EDIT_SETTINGS)
         hbox = wx.StaticBoxSizer(hbox_border, wx.HORIZONTAL)
         hbox.Add(vbox_left, 1, wx.EXPAND)
         hbox.Add(vbox_right, 1, wx.EXPAND)
         return hbox
 
     def createEditBoxLeft(self, id):
-        tab_txt = wx.StaticText(self, id, g_str_TAB_LENGTH)
-        save_txt = wx.StaticText(self, id, g_str_AUTOMATIC_SAVE)
+        tab_txt = wx.StaticText(self, id, TAB_LENGTH)
+        save_txt = wx.StaticText(self, id, AUTOMATIC_SAVE)
         arr_font_choices = ["Default", "Modern", "Roman", "Script",
                             "Swiss", "Teletype"]
         self.combo_box = wx.ComboBox(self, choices=arr_font_choices)

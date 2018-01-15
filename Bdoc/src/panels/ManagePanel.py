@@ -113,7 +113,7 @@ class ManagePanel(BasePanel):
         vertical_wrapper = wx.BoxSizer(wx.HORIZONTAL)
         vertical_wrapper.Add(version_txt, 1, wx.ALIGN_CENTER)
         horizontal.Add(vertical_wrapper, 1, wx.EXPAND)
-        overview_panel = self.GetParent().panel_stack[-1]
+        overview_panel = self.GetParent().arr_panel_stack[-1]
         btn_back = self.buttonMaker(
             BACK, lambda evt:
             overview_panel.refreshItemList() or self.GetParent().goBack())
