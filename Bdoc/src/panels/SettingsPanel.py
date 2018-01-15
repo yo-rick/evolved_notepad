@@ -113,7 +113,7 @@ class SettingsPanel(BasePanel):
             self.path = select_dir.GetPath()
             self.tf_pad_txt.SetValue(self.path)
             self.settings.writeToFile()
-        self.GetParent().goBack()
+        select_dir.Destroy()
 
     def fileSettings(self, id):
         hbox = self.createPrefixAndFolder(id)
