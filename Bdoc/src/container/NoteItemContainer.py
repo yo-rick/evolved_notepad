@@ -70,20 +70,20 @@ class NoteItemContainer(ItemContainer):
 
     def regenerateItemsDict(self):
         items = self.settings.getSetting('items')
-        items_dict = items[self.category]['items']
-        items_copy = list(self.arr_container_items)
-        deleted_keys = []
-        for key in items_dict:
-            if key in items_copy:
-                items_copy[items_copy.index(key)] = None
+        dic_items = items[self.category]['items']
+        arr_items_copy = list(self.arr_container_items)
+        arr_deleted_keys = []
+        for key in dic_items:
+            if key in arr_items_copy:
+                arr_items_copy[arr_items_copy.index(key)] = None
             else:
-                deleted_keys.append(key)
-        for key in deleted_keys:
-            del items_dict[key]
-        for i in range(len(items_copy)):
-            if items_copy[i] is None:
+                arr_deleted_keys.append(key)
+        for key in arr_deleted_keys:
+            del dic_items[key]
+        for i in range(len(arr_items_copy)):
+            if arr_items_copy[i] is None:
                 continue
-            items_dict[items_copy[i]] = self.path_components[i]
+            dic_items[arr_items_copy[i]] = self.path_components[i]
         self.settings.setSetting('items', items)
         self.settings.writeToFile()
 

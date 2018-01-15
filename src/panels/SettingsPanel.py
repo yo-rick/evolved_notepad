@@ -100,10 +100,13 @@ class SettingsPanel(BasePanel):
         old_path = self.settings.getSetting('path')
         if old_path != self.path:
             for category, comp in self.settings.getSetting('items').items():
+                print(category)
                 path = os.path.join(old_path, comp['folder'])
-                shutil.move(path, self.path)
+                print(path)
+                #print(os.path.isdir())
+                #shutil.move(path, self.path)
             self.settings.setSetting("path", self.path)
-        self.settings.writeToFile()
+        #self.settings.writeToFile()
         self.GetParent().goBack()
 
     def selectDir(self, event):
@@ -112,7 +115,7 @@ class SettingsPanel(BasePanel):
             self.path = sd_dir.GetPath()
             self.fs_pad_txt.SetValue(self.path)
             self.settings.writeToFile()
-        self.GetParent().goBack()
+        sd_dir.Destroy()
 
     def fileSettings(self, id):
         fs_hbox = self.createPrefixAndFolder(id)
