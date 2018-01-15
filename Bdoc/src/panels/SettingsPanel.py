@@ -35,7 +35,6 @@ import wx
 import MainFrame
 from settings import Settings
 from .BasePanel import BasePanel
-
 SETTINGS = "Instellingen"
 FILE_SETTINGS = "Bestandsinstellingen"
 PREFIX = "Prefix"
@@ -72,9 +71,9 @@ class SettingsPanel(BasePanel):
         self.bindEvents()
 
     def bindEvents(self):
-        self.cbb_button_anu.Bind(wx.EVT_BUTTON, self.cancel)
-        self.cbb_button_ops.Bind(wx.EVT_BUTTON, self.save)
-        self.cpaf_select_opslagmap.Bind(wx.EVT_BUTTON, self.selectDir)
+        self.btn_anu.Bind(wx.EVT_BUTTON, self.cancel)
+        self.btn_ops.Bind(wx.EVT_BUTTON, self.save)
+        self.btn_select_opslagmap.Bind(wx.EVT_BUTTON, self.selectDir)
         self.settings = Settings()
 
     def cancel(self, event):
@@ -90,13 +89,13 @@ class SettingsPanel(BasePanel):
 
     def save(self, event):
         self.settings.setSetting(
-            "prefix", self.cpaf_prefix_textfield.GetValue())
+            "prefix", self.tf_prefix.GetValue())
         self.settings.setSetting("font-family", self.cebl_combo_box.GetValue())
         self.settings.setSetting(
             "font-size", self.cebr_font_size_spinner.GetValue())
         self.settings.setSetting(
             "tab-length", self.cebr_tab_spinner.GetValue())
-        self.settings.setSetting("automatic-save", self.cebr_cb.GetValue())
+        self.settings.setSetting("automatic-save", self.chb_save.GetValue())
         old_path = self.settings.getSetting('path')
         if old_path != self.path:
             for category, comp in self.settings.getSetting('items').items():
@@ -124,9 +123,9 @@ class SettingsPanel(BasePanel):
 
     def createPrefixAndFolder(self, id):
         cpaf_prefix_txt = wx.StaticText(self, id, PREFIX)
-        self.cpaf_prefix_textfield = wx.TextCtrl(self)
+        self.tf_prefix = wx.TextCtrl(self)
         cpaf_save_folder_txt = wx.StaticText(self, id, SAVE_FOLDER)
-        self.cpaf_select_opslagmap = wx.Button(self, id, SELECT_FOLDER)
+        self.btn_select_opslagmap = wx.Button(self, id, SELECT_FOLDER)
         cpaf_vbox_left = wx.BoxSizer(wx.VERTICAL)
         cpaf_vbox_left.AddSpacer(5)
         cpaf_vbox_left.Add(
@@ -136,9 +135,9 @@ class SettingsPanel(BasePanel):
             cpaf_save_folder_txt, 1, wx.EXPAND | wx.ALIGN_CENTER_VERTICAL)
         cpaf_vbox_right = wx.BoxSizer(wx.VERTICAL)
         cpaf_vbox_right.Add(
-            self.cpaf_prefix_textfield, 1, wx.EXPAND | wx.ALIGN_RIGHT)
+            self.tf_prefix, 1, wx.EXPAND | wx.ALIGN_RIGHT)
         cpaf_vbox_right.Add(
-            self.cpaf_select_opslagmap, 1, wx.EXPAND | wx.ALIGN_RIGHT)
+            self.btn_select_opslagmap, 1, wx.EXPAND | wx.ALIGN_RIGHT)
         cpaf_hbox = wx.BoxSizer(wx.HORIZONTAL)
         cpaf_hbox.Add(cpaf_vbox_left, 1, wx.EXPAND)
         cpaf_hbox.AddSpacer(20)
@@ -146,14 +145,14 @@ class SettingsPanel(BasePanel):
         return cpaf_hbox
 
     def createBottomBox(self, id):
-        self.cbb_button_anu = wx.Button(self, id, CANCEL)
-        self.cbb_button_ops = wx.Button(self, id, SAVE)
+        self.btn_anu = wx.Button(self, id, CANCEL)
+        self.btn_ops = wx.Button(self, id, SAVE)
         cbb_version_txt = wx.StaticText(self, id, MainFrame.VERSION_STRING,
                                        style=wx.ALIGN_CENTER)
         cbb_hbox = wx.BoxSizer(wx.HORIZONTAL)
-        cbb_hbox.Add(self.cbb_button_anu, 1)
+        cbb_hbox.Add(self.btn_anu, 1)
         cbb_hbox.Add(cbb_version_txt, 3, wx.ALIGN_CENTER)
-        cbb_hbox.Add(self.cbb_button_ops, 1, wx.ALIGN_RIGHT)
+        cbb_hbox.Add(self.btn_ops, 1, wx.ALIGN_RIGHT)
         return cbb_hbox
 
     def createTitle(self, id):
@@ -197,7 +196,7 @@ class SettingsPanel(BasePanel):
         expand_center_flag = wx.EXPAND | wx.ALIGN_CENTER_VERTICAL
         cebr_vbox.Add(self.cebr_font_size_spinner, 1, expand_center_flag)
         cebr_vbox.Add(self.cebr_tab_spinner, 1, expand_center_flag)
-        self.cebr_cb = wx.CheckBox(self)
-        self.cebr_cb.SetValue(self.settings.getSetting("automatic-save"))
-        cebr_vbox.Add(self.cebr_cb, 1, expand_center_flag)
+        self.chb_save = wx.CheckBox(self)
+        self.chb_save.SetValue(self.settings.getSetting("automatic-save"))
+        cebr_vbox.Add(self.chb_save, 1, expand_center_flag)
         return cebr_vbox
