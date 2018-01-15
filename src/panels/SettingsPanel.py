@@ -100,7 +100,8 @@ class SettingsPanel(BasePanel):
         if old_path != self.path:
             for category, comp in self.settings.getSetting('items').items():
                 path = os.path.join(old_path, comp['folder'])
-                shutil.move(path, self.path)
+                if os.path.isdir(path):
+                    shutil.move(path, self.path)
             self.settings.setSetting("path", self.path)
         self.settings.writeToFile()
         self.GetParent().goBack()

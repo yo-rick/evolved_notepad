@@ -100,9 +100,7 @@ class SettingsPanel(BasePanel):
                 path = os.path.join(old_path, comp['folder'])
                 if os.path.isdir(path):
                     shutil.move(path, self.path)
-                else:
-                    print("WHAT THE FLYING FUCK:" + path)
-                    raise ValueError(path)
+
             self.settings.setSetting("path", self.path)
         self.settings.writeToFile()
         self.GetParent().goBack()
