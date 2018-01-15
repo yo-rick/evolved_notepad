@@ -99,7 +99,11 @@ class SettingsPanel(BasePanel):
         if old_path != self.path:
             for category, comp in self.settings.getSetting('items').items():
                 path = os.path.join(old_path, comp['folder'])
-                shutil.move(path, self.path)
+                if os.path.isdir(path):
+                    shutil.move(path, self.path)
+                else:
+                    print("WHAT THE FLYING FUCK:" + path)
+                    raise ValueError(path)
             self.settings.setSetting("path", self.path)
         self.settings.writeToFile()
         self.GetParent().goBack()
@@ -111,7 +115,7 @@ class SettingsPanel(BasePanel):
             self.path = select_dir.GetPath()
             self.tf_pad_txt.SetValue(self.path)
             self.settings.writeToFile()
-        self.GetParent().goBack()
+        select_dir.Destroy()
 
     def fileSettings(self, id):
         hbox = self.createPrefixAndFolder(id)

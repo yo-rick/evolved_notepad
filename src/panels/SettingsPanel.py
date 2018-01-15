@@ -188,10 +188,10 @@ class SettingsPanel(BasePanel):
     def createEditBoxRight(self, id):
         cebr_font_size = self.settings.getSetting('font-size')
         cebr_tab_length = self.settings.getSetting('tab-length')
-        self.cebr_font_size_spinner = wx.SpinCtrl(self, min=5, max=25,
-                                             initial=cebr_font_size)
-        self.cebr_tab_spinner = wx.SpinCtrl(self, min=2, max=8,
-                                       initial=cebr_tab_length)
+        self.cebr_font_size_spinner = wx.SpinCtrl(
+            self, min=5, max=25, initial=cebr_font_size)
+        self.cebr_tab_spinner = wx.SpinCtrl(
+            self, min=2, max=8, initial=cebr_tab_length)
         cebr_vbox = wx.BoxSizer(wx.VERTICAL)
         expand_center_flag = wx.EXPAND | wx.ALIGN_CENTER_VERTICAL
         cebr_vbox.Add(self.cebr_font_size_spinner, 1, expand_center_flag)
