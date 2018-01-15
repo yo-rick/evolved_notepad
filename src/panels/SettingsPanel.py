@@ -29,7 +29,6 @@ Log
 """
 import os
 import shutil
-
 import wx
 
 import MainFrame
@@ -100,13 +99,10 @@ class SettingsPanel(BasePanel):
         old_path = self.settings.getSetting('path')
         if old_path != self.path:
             for category, comp in self.settings.getSetting('items').items():
-                print(category)
                 path = os.path.join(old_path, comp['folder'])
-                print(path)
-                #print(os.path.isdir())
-                #shutil.move(path, self.path)
+                shutil.move(path, self.path)
             self.settings.setSetting("path", self.path)
-        #self.settings.writeToFile()
+        self.settings.writeToFile()
         self.GetParent().goBack()
 
     def selectDir(self, event):
