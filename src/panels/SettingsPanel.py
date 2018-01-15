@@ -29,7 +29,6 @@ Log
 """
 import os
 import shutil
-
 import wx
 
 import MainFrame
