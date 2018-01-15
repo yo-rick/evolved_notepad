@@ -91,7 +91,8 @@ class SettingsPanel(BasePanel):
         self.settings.setSetting(
             "prefix", self.tf_prefix.GetValue())
         self.settings.setSetting("font-family", self.combo_box.GetValue())
-        self.settings.setSetting("font-size", self.spi_font_size_spinner.GetValue())
+        self.settings.setSetting("font-size",
+                                 self.spi_font_size_spinner.GetValue())
         self.settings.setSetting("tab-length", self.spi_tab_spinner.GetValue())
         self.settings.setSetting("automatic-save", self.chb_save.GetValue())
         old_path = self.settings.getSetting('path')
@@ -104,7 +105,8 @@ class SettingsPanel(BasePanel):
         self.GetParent().goBack()
 
     def selectDir(self, event):
-        select_dir = wx.DirDialog(self, "Kies een map:", style=wx.DD_DEFAULT_STYLE)
+        select_dir = wx.DirDialog(self, "Kies een map:",
+                                  style=wx.DD_DEFAULT_STYLE)
         if select_dir.ShowModal() == wx.ID_OK:
             self.path = select_dir.GetPath()
             self.tf_pad_txt.SetValue(self.path)
@@ -142,7 +144,7 @@ class SettingsPanel(BasePanel):
         self.btn_anu = wx.Button(self, id, g_str_CANCEL)
         self.btn_ops = wx.Button(self, id, g_str_SAVE)
         version_txt = wx.StaticText(self, id, MainFrame.VERSION_STRING,
-                                       style=wx.ALIGN_CENTER)
+                                    style=wx.ALIGN_CENTER)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         hbox.Add(self.btn_anu, 1)
         hbox.Add(version_txt, 3, wx.ALIGN_CENTER)
@@ -169,12 +171,12 @@ class SettingsPanel(BasePanel):
         tab_txt = wx.StaticText(self, id, g_str_TAB_LENGTH)
         save_txt = wx.StaticText(self, id, g_str_AUTOMATIC_SAVE)
         arr_font_choices = ["Default", "Modern", "Roman", "Script",
-                             "Swiss", "Teletype"]
+                            "Swiss", "Teletype"]
         self.combo_box = wx.ComboBox(self, choices=arr_font_choices)
         self.combo_box.SetValue(self.settings.getSetting("font-family"))
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.Add(self.combo_box, 1,
-                      wx.EXPAND | wx.ALIGN_CENTRE_VERTICAL)
+                 wx.EXPAND | wx.ALIGN_CENTRE_VERTICAL)
         vbox.Add(tab_txt, 1, wx.EXPAND | wx.ALIGN_CENTRE_VERTICAL)
         vbox.Add(save_txt, 1, wx.EXPAND | wx.ALIGN_CENTRE_VERTICAL)
         return vbox
@@ -183,9 +185,9 @@ class SettingsPanel(BasePanel):
         font_size = self.settings.getSetting('font-size')
         tab_length = self.settings.getSetting('tab-length')
         self.spi_font_size_spinner = wx.SpinCtrl(self, min=5, max=25,
-                                             initial=font_size)
+                                                 initial=font_size)
         self.spi_tab_spinner = wx.SpinCtrl(self, min=2, max=8,
-                                       initial=tab_length)
+                                           initial=tab_length)
         vbox = wx.BoxSizer(wx.VERTICAL)
         expand_center_flag = wx.EXPAND | wx.ALIGN_CENTER_VERTICAL
         vbox.Add(self.spi_font_size_spinner, 1, expand_center_flag)
