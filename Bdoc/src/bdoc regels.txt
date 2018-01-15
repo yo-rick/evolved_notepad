@@ -1,0 +1,36 @@
+bij globale variabelen:
+g_<varnaam>
+globale variabelen komen altijd bovenaan in je script.
+
+je script begint altijd als volgt:
+import (import sys)
+_
+constanten (ALTIJD_HOOFDLETTERS = True)
+_
+golbale variabelen (g_waarde = 0)
+
+
+bij importeren komen eerst de interne imports (sys) dan externe (wx) en dan pas eigen imports met witregels ertussen!
+
+
+prefix voor wx items (geen hoofdletters):
+button -> btn_
+checkbox -> chb_
+radiobox -> rbx_
+radiobutton -> rb_
+textfield -> tf_
+figure -> fig_
+label -> lbl_
+scrollpane -> sp_
+scrollbar -> scb_
+frame -> frm_
+panel -> pnl_
+
+lijst -> arr_
+string -> str_
+dictionairy -> dic_
+set -> set_
+integers en floats -> geen prefix
+klasse -> cla_
+file -> fl_
+
