@@ -33,6 +33,6 @@ class NoteOverviewPanel(BaseOverviewPanel):
 
     def manageButton(self, event):
         parent = self.GetParent()
-        manage_panel = NoteManagePanel(
+        pnl_manage = NoteManagePanel(
             parent, wx.ID_ANY, self.item_container)
-        parent.showPanel(manage_panel)
+        parent.showPanel(pnl_manage)

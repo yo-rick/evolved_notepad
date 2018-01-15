@@ -11,7 +11,6 @@
 
 import wx
 import wx.lib.scrolledpanel as scrolled
-
 import MainFrame
 from .BasePanel import BasePanel
 from .BaseOverviewPanel import BaseOverviewPanel
@@ -36,19 +35,19 @@ class ManagePanel(BasePanel):
         self.text_singular = singular
         self.text_multiple = multiple
         self.item_container = item_container
-        self.marked_items = []
+        self.arr_marked_items = []
         self.added_message = False
         # Widgets
         self.input_ctrl = wx.TextCtrl(
             self, style=wx.HSCROLL | wx.TE_PROCESS_ENTER)
         self.input_ctrl.SetMaxLength(35)
-        self.scroll_panel = scrolled.ScrolledPanel(
+        self.sp_manage = scrolled.ScrolledPanel(
             self, wx.ID_ANY, style=wx.SUNKEN_BORDER)
         self.scroll_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.delete_button = self.buttonMaker(DELETE, self.deleteSelection)
+        self.btn_delete = self.buttonMaker(DELETE, self.deleteSelection)
         self.unavailable_text = text = self.textMaker(
             "Er zijn geen " + self.text_multiple.lower(),
-            parent=self.scroll_panel)
+            parent=self.sp_manage)
         # Draw screen
         self.box_container = wx.BoxSizer(wx.VERTICAL)
         self.fillBoxContainer()
@@ -58,43 +57,43 @@ class ManagePanel(BasePanel):
         title_text = self.textMaker(self.getPanelTitle(), self.fnt_title)
         self.box_container.Add(title_text, 1, wx.EXPAND | PADDING_FLAG, 10)
         self.createScrollPanel()
-        self.delete_button.Enable(bool(len(self.item_container.getItems())))
+        self.btn_delete.Enable(bool(len(self.item_container.getItems())))
         self.box_container.Add(
-            self.delete_button, 1, wx.EXPAND | PADDING_FLAG, 10)
+            self.btn_delete, 1, wx.EXPAND | PADDING_FLAG, 10)
         self.createNewItemSizer()
-        add_button = self.buttonMaker(ADD, self.addInput)
-        self.box_container.Add(add_button, 1, wx.EXPAND | PADDING_FLAG, 10)
+        btn_add = self.buttonMaker(ADD, self.addInput)
+        self.box_container.Add(btn_add, 1, wx.EXPAND | PADDING_FLAG, 10)
         self.box_container.AddStretchSpacer(2)
         self.createVersionAndBack()
 
     def createScrollPanel(self):
-        self.scroll_panel.SetAutoLayout(1)
-        self.scroll_panel.SetupScrolling()
-        self.scroll_panel.SetBackgroundColour((255, 255, 255))
-        items = self.item_container.getItems()
+        self.sp_manage.SetAutoLayout(1)
+        self.sp_manage.SetupScrolling()
+        self.sp_manage.SetBackgroundColour((255, 255, 255))
+        arr_items = self.item_container.getItems()
         self.scroll_sizer.Add(self.unavailable_text, 1, wx.CENTER, 5)
-        for idx in range(len(items)):
+        for idx in range(len(arr_items)):
             self.scroll_sizer.Add(
-                self.createSizerForItem(idx, items[idx]),
+                self.createSizerForItem(idx, arr_items[idx]),
                 0, wx.EXPAND)
-        self.scroll_panel.SetSizer(self.scroll_sizer)
+        self.sp_manage.SetSizer(self.scroll_sizer)
         self.box_container.Add(
-            self.scroll_panel, 5, wx.EXPAND | PADDING_FLAG, 10)
+            self.sp_manage, 5, wx.EXPAND | PADDING_FLAG, 10)
         self.refreshList()
 
     def createSizerForItem(self, idx, item):
-        checkbox = wx.CheckBox(self.scroll_panel)
-        label = wx.TextCtrl(self.scroll_panel, style=wx.TE_READONLY)
-        label.Enable(False)
-        label.SetForegroundColour((0, 0, 0))
-        label.SetBackgroundColour((255, 255, 255))
-        label.SetFont(self.fnt_default)
-        label.SetValue(item)
+        checkbox = wx.CheckBox(self.sp_manage)
+        lbl_manage = wx.TextCtrl(self.sp_manage, style=wx.TE_READONLY)
+        lbl_manage.Enable(False)
+        lbl_manage.SetForegroundColour((0, 0, 0))
+        lbl_manage.SetBackgroundColour((255, 255, 255))
+        lbl_manage.SetFont(self.fnt_default)
+        lbl_manage.SetValue(item)
         checkbox.Bind(
-            wx.EVT_CHECKBOX, lambda evt: self.updateCheckbox(evt, label))
+            wx.EVT_CHECKBOX, lambda evt: self.updateCheckbox(evt, lbl_manage))
         simple_sizer = wx.BoxSizer(wx.HORIZONTAL)
         simple_sizer.Add(checkbox, 0, wx.EXPAND | wx.ALL, 5)
-        simple_sizer.Add(label, 1, wx.EXPAND | (wx.ALL - wx.LEFT), 5)
+        simple_sizer.Add(lbl_manage, 1, wx.EXPAND | (wx.ALL - wx.LEFT), 5)
         return simple_sizer
 
     def createNewItemSizer(self):
@@ -115,19 +114,19 @@ class ManagePanel(BasePanel):
         vertical_wrapper.Add(version_txt, 1, wx.ALIGN_CENTER)
         horizontal.Add(vertical_wrapper, 1, wx.EXPAND)
         overview_panel = self.GetParent().panel_stack[-1]
-        back_button = self.buttonMaker(
+        btn_back = self.buttonMaker(
             BACK, lambda evt:
             overview_panel.refreshItemList() or self.GetParent().goBack())
-        horizontal.Add(back_button, 1, wx.EXPAND)
+        horizontal.Add(btn_back, 1, wx.EXPAND)
         self.box_container.Add(horizontal, 1, wx.EXPAND | PADDING_FLAG, 10)
 
     def refreshList(self):
         got_items = bool(len(self.item_container.getItems()))
-        self.delete_button.Enable(got_items)
+        self.btn_delete.Enable(got_items)
         self.unavailable_text.Show(not got_items)
         self.scroll_sizer.Layout()
-        self.scroll_panel.Layout()
-        self.scroll_panel.SetupScrolling(scrollToTop=False)
+        self.sp_manage.Layout()
+        self.sp_manage.SetupScrolling(scrollToTop=False)
 
     def addInput(self, evt):
         text = self.input_ctrl.GetValue()
@@ -145,18 +144,18 @@ class ManagePanel(BasePanel):
             self.refreshList()
 
     def deleteSelection(self, evt):
-        self.marked_items.sort()
-        for idx in self.marked_items[::-1]:
+        self.arr_marked_items.sort()
+        for idx in self.arr_marked_items[::-1]:
             self.item_container.deleteItem(idx)
             self.scroll_sizer.GetItem(idx + 1).DeleteWindows()
-        self.marked_items.clear()
+        self.arr_marked_items.clear()
         self.refreshList()
 
     def updateCheckbox(self, evt, lbl):
         idx = self.item_container.getItems().index(lbl.GetValue())
         if evt.GetEventObject().GetValue() is True:
             lbl.SetBackgroundColour((255, 255, 0))
-            self.marked_items.append(idx)
+            self.arr_marked_items.append(idx)
         else:
             lbl.SetBackgroundColour((255, 255, 255))
-            self.marked_items.remove(idx)
+            self.arr_marked_items.remove(idx)

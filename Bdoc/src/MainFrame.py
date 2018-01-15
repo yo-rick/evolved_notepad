@@ -28,24 +28,24 @@ class MainFrame(wx.Frame):
         super().__init__(parent, id, title, size=(800, 800))
         self.Center()
         self.container_box = wx.BoxSizer(wx.VERTICAL)
-        self.panel_stack = []
+        self.arr_panel_stack = []
         self.SetSizer(self.container_box)
 
     def showPanel(self, panel):
-        if len(self.panel_stack):
-            last_panel = self.panel_stack[-1]
-            last_panel.Hide()
-        self.panel_stack.append(panel)
+        if len(self.arr_panel_stack):
+            pnl_last = self.arr_panel_stack[-1]
+            pnl_last.Hide()
+        self.arr_panel_stack.append(panel)
         self.container_box.Add(panel, 1, wx.EXPAND)
         self.updateLayout(panel.getFrameTitle())
 
     def goBack(self):
-        if len(self.panel_stack) > 1:
-            self.container_box.Remove(len(self.panel_stack) - 1)
-            self.panel_stack.pop().Hide()
-            last_panel = self.panel_stack[-1]
-            last_panel.Show()
-            self.updateLayout(last_panel.getFrameTitle())
+        if len(self.arr_panel_stack) > 1:
+            self.container_box.Remove(len(self.arr_panel_stack) - 1)
+            self.arr_panel_stack.pop().Hide()
+            pnl_last = self.arr_panel_stack[-1]
+            pnl_last.Show()
+            self.updateLayout(pnl_last.getFrameTitle())
 
     def updateLayout(self, title=None):
         if title is not None:

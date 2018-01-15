@@ -40,7 +40,6 @@ Log
 """
 import wx
 import wx.lib.scrolledpanel as scrolled
-
 import MainFrame
 from .BasePanel import BasePanel
 from .SettingsPanel import SettingsPanel
