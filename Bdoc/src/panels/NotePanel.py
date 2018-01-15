@@ -170,8 +170,8 @@ class NotePanel(BasePanel):
         self.note_field_wrapper.saveToFile(self.note_path)
 
     def boxMaker(self, BxM_itemList, BxM_size, BxM_flagList,
-                 BxM_rotatie=wx.HORIZONTAL, BxM_borderList=False):
-        if BxM_borderList == False:
+                 BxM_rotatie=wx.HORIZONTAL, BxM_borderList=None):
+        if BxM_borderList == None:
             BxM_borderList = [1] * len(BxM_itemList)
         box_newSizer = wx.BoxSizer(BxM_rotatie)
         for Pos in range(0, len(BxM_itemList)):

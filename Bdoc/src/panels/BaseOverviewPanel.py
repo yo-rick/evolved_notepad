@@ -169,7 +169,7 @@ class BaseOverviewPanel(BasePanel):
             txt_message = self.textMaker(
                 "Er zijn geen notities beschikbaar", self.fnt_default,
                 parent=self.sp_scroll)
-        else :
+        else:
             txt_message = self.textMaker(
                 "Er zijn geen categorieën", self.fnt_default,
                 parent=self.sp_scroll)
