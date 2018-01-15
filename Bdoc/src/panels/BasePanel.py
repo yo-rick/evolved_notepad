@@ -28,7 +28,6 @@ class BasePanel(wx.Panel):
         super().__init__(parent=parent, id=id)
         self.frame_title = frame_title
         self.panel_title = panel_title
-        # fonts
         self.fnt_title = self.fontMaker(18, FM_weight=wx.FONTWEIGHT_BOLD)
         self.fnt_default = self.fontMaker()
 
