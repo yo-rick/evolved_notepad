@@ -24,7 +24,7 @@ Log
 |                          |            | other folder                      |
 +--------------------------+------------+-----------------------------------+
 | Wesley Ameling           | 14-01-2018 | Improve moving, moving on save and|
-|                          |            | minor layout improvement          |
+|                          |            | minor layout improvement.         |
 +--------------------------+------------+-----------------------------------+
 """
 import os
