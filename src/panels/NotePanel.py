@@ -85,13 +85,13 @@ class NotePanel(BasePanel):
     def handleFlag(self, style, flag):
         is_italic = style.GetFontStyle() == wx.FONTSTYLE_ITALIC
         is_bold = style.GetFontWeight() == wx.FONTWEIGHT_BOLD
-        if flag == "\x05" and not is_bold:
+        if flag == "\x07" and not is_bold:
             style.SetFontWeight(wx.FONTWEIGHT_BOLD)
-        elif flag == "\x06" and is_bold:
+        elif flag == "\x08" and is_bold:
             style.SetFontWeight(wx.FONTWEIGHT_NORMAL)
-        elif flag == "\x07" and not is_italic:
+        elif flag == "\x05" and not is_italic:
             style.SetFontStyle(wx.FONTSTYLE_ITALIC)
-        elif flag == "\x08" and is_italic:
+        elif flag == "\x06" and is_italic:
             style.SetFontStyle(wx.FONTSTYLE_NORMAL)
         else:
             return False

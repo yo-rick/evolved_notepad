@@ -161,6 +161,7 @@ class BaseOverviewPanel(BasePanel):
         self.item_container.clickItem(id)
 
     def onUpdateField(self, event):
+        print("Searching")
         self.searchItemList(self.searchbar.GetValue())
         event.Skip()
 

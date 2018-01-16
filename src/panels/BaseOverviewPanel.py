@@ -93,15 +93,15 @@ class BaseOverviewPanel(BasePanel):
         self.searchItemList(self.searchbar.GetValue())
 
     def searchItemList(self, search_term):
-        if search_term:
-            children = self.sp_scroll.GetChildren()
-            for idx in range(len(children)):
-                child = children[idx]
-                if search_term.lower() in child.GetLabel().lower():
-                    child.SetPosition((0, 50 + 50 * idx))
-                    self.bSizer.Show(child)
-                else:
-                    self.bSizer.Hide(child)
+        children = self.sp_scroll.GetChildren()
+        for idx in range(len(children)):
+            child = children[idx]
+            search_term = search_term.lower()
+            if not search_term or search_term in child.GetLabel().lower():
+                child.SetPosition((0, 50 + 50 * idx))
+                self.bSizer.Show(child)
+            else:
+                self.bSizer.Hide(child)
         self.sp_scroll.Layout()
         self.sp_scroll.SetupScrolling(scrollToTop=False)
 
