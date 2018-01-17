@@ -32,9 +32,9 @@ from .NoteItemContainer import NoteItemContainer
 
 class CategoryItemContainer(ItemContainer):
 
-    def __init__(self, categoryFolder):
+    def __init__(self):
         super().__init__()
-        self.folder = categoryFolder
+        self.folder = Settings().getSetting('path')
 
     def clickItem(self, index):
         super().clickItem(index)
@@ -89,3 +89,7 @@ class CategoryItemContainer(ItemContainer):
                 del items_dict[category]
         self.settings.setSetting('items', items_dict)
         self.settings.writeToFile()
+
+    def reloadSettings(self):
+        super().reloadSettings()
+        self.folder = self.settings.getSetting("path")
