@@ -135,7 +135,7 @@ class NotePanel(BasePanel):
 
     def setBackgroundColour(self, button):
         current_colour = button.GetBackgroundColour()
-        if current_colour == (255, 255, 255, 255):
+        if current_colour != (135, 135, 135, 255):
             button.SetBackgroundColour((135, 135, 135, 255))
         else:
             button.SetBackgroundColour((255, 255, 255, 255))
